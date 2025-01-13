@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-#seeorm
+#seaorm
 sea-orm = { version = "1.0.0", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros" ] }
 migration = { path = "migration" }
+entity = { path = "entity" }

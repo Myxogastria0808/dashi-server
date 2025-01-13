@@ -9,17 +9,15 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Post::Table)
+                    .table(Label::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Post::Id)
-                            .integer()
+                        ColumnDef::new(Label::VisibleId)
+                            .string()
                             .not_null()
-                            .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Post::Title).string().not_null())
-                    .col(ColumnDef::new(Post::Text).string().not_null())
+                    .col(ColumnDef::new(Label::Record).string().not_null())
                     .to_owned(),
             )
             .await
@@ -27,15 +25,14 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(Post::Table).to_owned())
+            .drop_table(Table::drop().table(Label::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-enum Label {
+pub enum Label {
     Table,
-    Id,
-    Title,
-    Text,
+    VisibleId,
+    Record,
 }
