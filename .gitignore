@@ -1,10 +1,7 @@
 /target
-<<<<<<< Updated upstream
-=======
 /postgres
 /neo4j
 /meilisearch
 /migration/target
 /entity/target
 .env
->>>>>>> Stashed changes
