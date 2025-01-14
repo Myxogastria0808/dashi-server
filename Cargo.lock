@@ -127,6 +127,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "application"
+version = "0.1.0"
+dependencies = [
+ "domain",
+]
+
+[[package]]
 name = "arrayvec"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -662,6 +669,8 @@ dependencies = [
 name = "dashi-server"
 version = "0.1.0"
 dependencies = [
+ "application",
+ "domain",
  "entity",
  "migration",
  "sea-orm 1.1.4",
@@ -721,6 +730,10 @@ dependencies = [
  "quote",
  "syn 2.0.96",
 ]
+
+[[package]]
+name = "domain"
+version = "0.1.0"
 
 [[package]]
 name = "dotenvy"
