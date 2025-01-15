@@ -1,0 +1,8 @@
+[package]
+name = "infractructure"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+#DDD
+domain = { path = "../domain" }

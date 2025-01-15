@@ -13,7 +13,7 @@ flowchart TD
 
 ## presentation
 
-- dashi-server の main の binary crate
+- src/presentation 以下の binary crate
 
 ## application
 
@@ -30,14 +30,8 @@ flowchart TD
 - migration
 - entity
 
-# initialer の実行
-
-```sh
-cargo run --bin init
-```
-
 # server の起動
 
 ```sh
-cargo run --bin server
+cargo run --bin presentation
 ```
