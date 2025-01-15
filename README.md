@@ -1,175 +1,43 @@
-# デイレクトリ構造
+# 構造
 
-```
-/
-src/
-├─ presentation/
-│  ├─ src/
-│  │  ├─ route/
-│  │  │  ├─ login.rs
-│  │  │  ├─ healthcheck.rs
-│  │  │  ├─ item.rs
-│  │  │  ├─ rent.rs
-│  │  │  ├─ generate.rs
-│  │  │  ├─ csv.rs
-│  │  │  └─ lib.rs
-│  │  └─ handler/
-│  │     ├─ login.rs
-│  │     ├─ healthcheck.rs
-│  │     ├─ item.rs
-│  │     ├─ rent.rs
-│  │     ├─ generate.rs
-│  │     ├─ csv.rs
-│  │     └─ lib.rs
-│  └─ Cargo.toml
-├─ application/
-│  ├─ src/
-│  │     ├─ login/
-│  │     │  └─ login.rs
-│  │     ├─ healthcheck/
-│  │     │  └─ healthcheck.rs
-│  │     ├─ item/
-│  │     │  ├─ search.rs
-│  │     │  ├─ each_item.rs
-│  │     │  ├─ connector.rs
-│  │     │  ├─ cable.rs
-│  │     │  ├─ register.rs
-│  │     │  ├─ update.rs
-│  │     │  └─ delete.rs
-│  │     ├─ rent/
-│  │     │  ├─ rent.rs
-│  │     │  └─ return.rs
-│  │     ├─ generate/
-│  │     │  ├─ qr.rs
-│  │     │  └─ barcode.rs
-│  │     ├─ csv/
-│  │     │  ├─ depreiation.rs
-│  │     │  └─ item.rs
-│  │     └─ lib.rs
-│  └─ Cargo.toml
-├─ domain/
-│  ├─ src/
-│  │  ├─ value_object/
-│  │  ├─ entity/
-│  │  │  ├─ request_type.rs
-│  │  │  └─ response_type.rs
-│  │  ├─ domain_service/
-│  │  └─ repository/
-│  └─ Cargo.toml
-├─ infrastructure/
-│  ├─ src/
-│  │  ├─ login.rs
-│  │  ├─ healthcheck.rs
-│  │  ├─ item.rs
-│  │  ├─ rent.rs
-│  │  ├─ generate.rs
-│  │  ├─ csv.rs
-│  │  └─ lib.rs
-│  └─ Cargo.toml
-└─ main.rs
-migration/
-├─ src/
-│  ├─ lib.rs
-│  ├─ m20220101_000001_item_table.rs
-│  ├─ m20220101_000001_label_table.rs
-│  ├─ m20220101_000001_rent_table.rs
-│  └─ main.rs
-├─ README.md
-└─ Cargo.toml
-entity/
-├─ src/
-│  ├─ item.rs
-│  ├─ label.rs
-│  ├─ mod.rs
-│  ├─ prelude.rs
-│  └─ rent.rs
-└─ Cargo.toml
+server では、Layered Architecture を採用している
+
+※ SeaORM を採用している関係で構造が乱れているが、 SeaORM を使用する場合はこの構造のままの方が使いやすいので、この構造のままにしている
+
+```mermaid
+flowchart TD
+    presentation --> application
+    application --> domain
+    infrastructure --> domain
 ```
 
-元データ
+## presentation
 
+- dashi-server の main の binary crate
+
+## application
+
+- src/application 以下の library crate
+
+## domain
+
+- src/domain 以下の library crate
+- entity
+
+## infrastructure
+
+- src/infrastructure 以下の library crate
+- migration
+- entity
+
+# initialer の実行
+
+```sh
+cargo run --bin init
 ```
-/
-src/
- presentation/
-  src/
-   route/
-    login.rs
-    healthcheck.rs
-    item.rs
-    rent.rs
-    generate.rs
-    csv.rs
-    lib.rs
-   handler/
-    login.rs
-    healthcheck.rs
-    item.rs
-    rent.rs
-    generate.rs
-    csv.rs
-    lib.rs
-  Cargo.toml
- application/
-  src/
-    login/
-     login.rs
-    healthcheck/
-     healthcheck.rs
-    item/
-     search.rs
-     each_item.rs
-     connector.rs
-     cable.rs
-     register.rs
-     update.rs
-     delete.rs
-    rent/
-     rent.rs
-     return.rs
-    generate/
-     qr.rs
-     barcode.rs
-    csv/
-     depreiation.rs
-     item.rs
-    lib.rs
-  Cargo.toml
- domain/
-  src/
-   value_object/
-   entity/
-    request_type.rs
-    response_type.rs
-   domain_service/
-   repository/
-  Cargo.toml
- infrastructure/
-  src/
-   login.rs
-   healthcheck.rs
-   item.rs
-   rent.rs
-   generate.rs
-   csv.rs
-   lib.rs
-  Cargo.toml
- main.rs
-migration/
- src/
-  lib.rs
-  m20220101_000001_item_table.rs
-  m20220101_000001_label_table.rs
-  m20220101_000001_rent_table.rs
-  main.rs
- README.md
- Cargo.toml
-entity/
- src/
-  item.rs
-  label.rs
-  mod.rs
-  prelude.rs
-  rent.rs
- Cargo.toml
+
+# server の起動
+
+```sh
+cargo run --bin server
 ```
