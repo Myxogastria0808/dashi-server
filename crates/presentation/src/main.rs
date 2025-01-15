@@ -1,11 +1,12 @@
-// use crate::routes::index;
 use axum::{Extension, Router, extract::DefaultBodyLimit, http::Method, routing::get};
-use sea_orm::{self, DatabaseConnection, DbErr};
+use dotenvy::dotenv;
+use std::env;
 use tower_http::cors::{Any, CorsLayer};
 // use utoipa::OpenApi;
 // use utoipa_swagger_ui::SwaggerUi;
 
-mod presentation;
+mod handler;
+mod route;
 
 #[tokio::main]
 async fn main() {
@@ -13,7 +14,11 @@ async fn main() {
 }
 
 //axum
-async fn api() -> Result<(), DbErr> {
+async fn api() -> Result<(), axum::Error> {
+    // load .env file
+    dotenv().expect(".env file not found.");
+    // insert a environment variable
+    let port: String = env::var("SERVER_PORT").expect("SERVER_PORT not found in .env file.");
     //CORS
     let cors: CorsLayer = CorsLayer::new()
         .allow_methods([Method::POST, Method::GET, Method::DELETE, Method::PUT])
@@ -21,12 +26,14 @@ async fn api() -> Result<(), DbErr> {
     //Router
     let app = Router::new()
         .route("/", get(ping))
-        // .merge(index::root_routes().await)
+        .merge(route::root::root_route().await)
         // .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .layer(cors)
         .layer(DefaultBodyLimit::max(1024 * 1024 * 100)); //10MB
     //Server
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:5000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind(&format!("0.0.0.0:{}", port))
+        .await
+        .unwrap();
     println!("listening on http://{}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
     Ok(())

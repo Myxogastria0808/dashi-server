@@ -1,5 +1,5 @@
 [package]
-name = "infractructure"
+name = "infrastructure"
 version.workspace = true
 edition.workspace = true
 

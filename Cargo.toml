@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "crates/init",
     "crates/presentation",
     "crates/application",
     "crates/domain",
@@ -20,3 +21,5 @@ tower-http = { version = "0.5.2", features = ["cors"] }
 sea-orm = { version = "1.0.0", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros" ] }
 migration = { path = "migration" }
 entity = { path = "entity" }
+#others
+dotenvy = "0.15.7"

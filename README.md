@@ -22,13 +22,18 @@ flowchart TD
 ## domain
 
 - src/domain 以下の library crate
-- entity
 
 ## infrastructure
 
 - src/infrastructure 以下の library crate
 - migration
 - entity
+
+# initilizer の実行
+
+```sh
+cargo run --bin init
+```
 
 # server の起動
 
