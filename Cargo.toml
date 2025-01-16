@@ -41,7 +41,7 @@ sea-orm = { version = "1.0.0", features = [ "sqlx-postgres", "runtime-tokio-nati
 chrono = "0.4.38"
 serde_json = "1.0.127"
 #cloudflare
-cloudflare-r2-rs = "0.6.4"
+cloudflare-r2-rs = "0.6.8"
 #Meilisearch
 meilisearch-sdk = "0.27.1"
 serde = { version="1.0.209", features=["derive"] }

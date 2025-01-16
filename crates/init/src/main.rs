@@ -94,26 +94,25 @@ async fn main() {
         .run(query("CREATE (item:Item {id: $id})").param("id", 1))
         .await
         .expect("Failed to create item node");
-    // get node
-    let mut insert_graphdb_item_node = graphdb
-        .execute(query("MATCH node=(item:Item {id: $id}) RETURN node").param("id", 1))
-        .await
-        .unwrap();
-    // parse node
-    loop {
-        let item = insert_graphdb_item_node.next().await.unwrap();
-        let row = match item {
-            Some(row) => row,
-            None => break,
-        };
-        let node = row.get::<Node>("node").unwrap();
-        let id = node.get::<i64>("id").unwrap();
-        println!("[INFO]: GraphDb result of item\n{:#?}", id);
-    }
+    // // get node
+    // let mut insert_graphdb_item_node = graphdb
+    //     .execute(query("MATCH node=(item:Item {id: $id}) RETURN node").param("id", 1))
+    //     .await
+    //     .unwrap();
+    // // parse node
+    // loop {
+    //     let item = insert_graphdb_item_node.next().await.unwrap();
+    //     let row = match item {
+    //         Some(row) => row,
+    //         None => break,
+    //     };
+    //     let node = row.get::<Node>("node").unwrap();
+    //     println!("[INFO]: GraphDB result of item\n{:#?}", node);
+    // }
 
     // Add r2 data //
     //open file
-    let mut file = File::open("./image/tsukuba.webp")
+    let mut file = File::open("./crates/init/image/tsukuba.webp")
         .await
         .expect("Failed to open file");
     //read binary
@@ -123,16 +122,11 @@ async fn main() {
         .await
         .expect("Failed to close file");
     //upload file
-    r2.upload(
-        "1.webp",
-        &buffer[..],
-        Some("max-age=60"),
-        Some("image/webp"),
-    )
-    .await;
+    r2.upload("1.txt", b"hello", Some("max-age=60"), Some("plain/text"))
+        .await;
     //get file
-    let result = r2.get("1.webp").await.expect("Failed to upload file");
-    println!("[INFO]: R2 result of file\n{:#?}", result);
+    // let result = r2.get("1.webp").await.expect("Failed to upload file");
+    // println!("[INFO]: R2 result of file\n{:#?}", result);
 
     // Close rdb
     let _ = rdb.close().await;

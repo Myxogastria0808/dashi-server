@@ -55,6 +55,12 @@ flowchart TD
 cargo run --bin presentation
 ```
 
+# migration の実行
+
+```sh
+DATABASE_URL="postgres://<username>:<password>@<ip_address>:<port>/<database_name>" sea-orm-cli migrate refresh
+```
+
 # initilizer の実行
 
 ```sh
