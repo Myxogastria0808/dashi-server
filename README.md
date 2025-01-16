@@ -1,3 +1,23 @@
+# Service and Container
+
+## RDB (Container)
+
+- PostgreSQL
+
+## GraphDB (Container)
+
+- Neo4j
+
+## Meilisearch (Container)
+
+- Meilisearch
+
+## Object Strage (Service)
+
+※ initilize のときのみ使用
+
+- Cloudflare R2
+
 # 構造
 
 server では、Layered Architecture を採用している
@@ -29,14 +49,76 @@ flowchart TD
 - migration
 - entity
 
+# server の起動
+
+```sh
+cargo run --bin presentation
+```
+
 # initilizer の実行
 
 ```sh
 cargo run --bin init
 ```
 
-# server の起動
+# 初期データ
 
-```sh
-cargo run --bin presentation
+## RDB
+
+```mermaid
+erDiagram
+    Item |o--|| Label : "VisibleId<->VisibleId"
+    Item {
+        i32 Id PK "1"
+        String VisibleId FK "0000"
+        boolean IsWaste "false"
+        String Name "筑波大學"
+        String ProductNumber ""
+        String Description "ルートの物品です"
+        Option_i32 PurchaseYear ""
+        Option_i32 PurchasePrice ""
+        Option_i32 Durability ""
+        boolean IsDepreciation "false"
+        Json Connector "vec![]"
+        boolean IsRent "false"
+        String Color ""
+        datetime CreatedAt "Utc::now().naive_utc()"
+        datetime UpdatedAt "Utc::now().naive_utc()"
+    }
+    Label {
+        i32 Id PK "1"
+        String VisibleId PK "0000"
+        String Record "Record::Nothing"
+    }
+```
+
+## Meilisearch
+
+```mermaid
+erDiagram
+    Item {
+        i32 Id PK "1"
+        String VisibleId FK "0000"
+        String Record "Record::Nothing"
+        boolean IsWaste "false"
+        String Name "筑波大學"
+        String ProductNumber ""
+        String Description "ルートの物品です"
+        Option_i32 PurchaseYear ""
+        Option_i32 PurchasePrice ""
+        Option_i32 Durability ""
+        boolean IsDepreciation "false"
+        Json Connector "vec![]"
+        boolean IsRent "false"
+        String Color ""
+        datetime CreatedAt "Utc::now().naive_utc()"
+        datetime UpdatedAt "Utc::now().naive_utc()"
+    }
+```
+
+## GraphDB
+
+```mermaid
+flowchart TD
+    id1(("id: 1"))
 ```

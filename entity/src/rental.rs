@@ -3,7 +3,7 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "rent")]
+#[sea_orm(table_name = "rental")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
@@ -11,7 +11,7 @@ pub struct Model {
     pub recipient: String,
     pub description: String,
     pub rent_at: DateTime,
-    pub return_at: DateTime,
+    pub render_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

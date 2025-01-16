@@ -1,7 +1,7 @@
 pub use sea_orm_migration::prelude::*;
 mod m20220101_000001_item_table;
 mod m20220101_000001_label_table;
-mod m20220101_000001_rent_table;
+mod m20220101_000001_rental_table;
 
 pub struct Migrator;
 
@@ -11,7 +11,7 @@ impl MigratorTrait for Migrator {
         vec![
             Box::new(m20220101_000001_label_table::Migration),
             Box::new(m20220101_000001_item_table::Migration),
-            Box::new(m20220101_000001_rent_table::Migration),
+            Box::new(m20220101_000001_rental_table::Migration),
         ]
     }
 }

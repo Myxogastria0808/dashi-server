@@ -4,4 +4,4 @@ pub mod prelude;
 
 pub mod item;
 pub mod label;
-pub mod rent;
+pub mod rental;

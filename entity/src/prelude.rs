@@ -2,4 +2,4 @@
 
 pub use super::item::Entity as Item;
 pub use super::label::Entity as Label;
-pub use super::rent::Entity as Rent;
+pub use super::rental::Entity as Rental;

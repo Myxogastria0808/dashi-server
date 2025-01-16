@@ -4,7 +4,7 @@ use crate::handler::item::{
 };
 use axum::{
     Router,
-    routing::{delete, get, post, put},
+    routing::{get, post, put},
 };
 
 pub async fn item_route() -> Router {
@@ -14,7 +14,7 @@ pub async fn item_route() -> Router {
         .route("/connector/:connector_name", get(connctor_handler))
         .route("/cable", get(cable_handler))
         .route("/register", post(register_handler))
-        .route("update", put(update_handler))
+        .route("/update", put(update_handler))
         .route("/delete/:visible_id", post(delete_handler));
     Router::new().merge(Router::new().nest("/item", item_routes))
 }

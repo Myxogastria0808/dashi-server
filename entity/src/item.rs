@@ -34,8 +34,8 @@ pub enum Relation {
         on_delete = "NoAction"
     )]
     Label,
-    #[sea_orm(has_many = "super::rent::Entity")]
-    Rent,
+    #[sea_orm(has_many = "super::rental::Entity")]
+    Rental,
 }
 
 impl Related<super::label::Entity> for Entity {
@@ -44,9 +44,9 @@ impl Related<super::label::Entity> for Entity {
     }
 }
 
-impl Related<super::rent::Entity> for Entity {
+impl Related<super::rental::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Rent.def()
+        Relation::Rental.def()
     }
 }
 
