@@ -5,12 +5,15 @@ use crate::route::rent::rent_route;
 use crate::route::utils::util_route;
 use axum::Router;
 
-pub async fn root_route() -> Router {
+pub fn root_route<S>() -> Router<S>
+where
+    S: Send + Sync + Clone + 'static,
+{
     let root_routes = Router::new()
-        .merge(csv_route().await)
-        .merge(generate_route().await)
-        .merge(item_route().await)
-        .merge(rent_route().await)
-        .merge(util_route().await);
-    Router::new().merge(Router::new().nest("/api", root_routes))
+        // .merge(csv_route())
+        // .merge(generate_route())
+        // .merge(item_route())
+        // .merge(rent_route())
+        .merge(util_route());
+    Router::new().nest("/api", root_routes)
 }

@@ -6,7 +6,6 @@ use entity::{
 use infrastructure::connection;
 use neo4rs::{Node, query};
 use sea_orm::{self, EntityTrait, Set};
-use tokio::{fs::File, io::AsyncReadExt};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
@@ -20,8 +19,6 @@ async fn main() {
     let meilisearch = connection::meilisearch::connect_meilisearch().await;
     // Connect r2
     let r2 = connection::object_strage::connect_r2().await;
-    // Get r2 url
-    // let r2_url = connection::object_strage::get_r2_url().await;
 
     // Add rdb data //
     // Insert data into the Label table
@@ -94,39 +91,27 @@ async fn main() {
         .run(query("CREATE (item:Item {id: $id})").param("id", 1))
         .await
         .expect("Failed to create item node");
-    // // get node
-    // let mut insert_graphdb_item_node = graphdb
-    //     .execute(query("MATCH node=(item:Item {id: $id}) RETURN node").param("id", 1))
-    //     .await
-    //     .unwrap();
-    // // parse node
-    // loop {
-    //     let item = insert_graphdb_item_node.next().await.unwrap();
-    //     let row = match item {
-    //         Some(row) => row,
-    //         None => break,
-    //     };
-    //     let node = row.get::<Node>("node").unwrap();
-    //     println!("[INFO]: GraphDB result of item\n{:#?}", node);
-    // }
+    // get node
+    let mut insert_graphdb_item_node = graphdb
+        .execute(query("MATCH (item:Item {id: $id}) RETURN item").param("id", 1))
+        .await
+        .unwrap();
+    // parse node
+    loop {
+        let item = insert_graphdb_item_node.next().await.unwrap();
+        let row = match item {
+            Some(row) => row,
+            None => break,
+        };
+        let node: Node = row.get::<Node>("item").unwrap();
+        let id: i64 = node.get::<i64>("id").unwrap();
+        println!("[INFO]: GraphDB result of item\nid: {:#?}", id);
+    }
 
     // Add r2 data //
-    //open file
-    let mut file = File::open("./crates/init/image/tsukuba.webp")
+    r2.upload_file("1.webp", "image/webp", "./crates/init/image/tsukuba.webp")
         .await
-        .expect("Failed to open file");
-    //read binary
-    let mut buffer = Vec::new();
-    //close file
-    file.read_to_end(&mut buffer)
-        .await
-        .expect("Failed to close file");
-    //upload file
-    r2.upload("1.txt", b"hello", Some("max-age=60"), Some("plain/text"))
-        .await;
-    //get file
-    // let result = r2.get("1.webp").await.expect("Failed to upload file");
-    // println!("[INFO]: R2 result of file\n{:#?}", result);
+        .expect("Failed to upload file");
 
     // Close rdb
     let _ = rdb.close().await;

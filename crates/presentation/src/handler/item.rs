@@ -1,3 +1,6 @@
+use axum::Extension;
+use domain::entity::endpoint::EndPoint;
+
 pub async fn search_handler() -> String {
     "search_handler".to_string()
 }

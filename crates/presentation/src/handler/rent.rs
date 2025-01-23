@@ -1,3 +1,6 @@
+use axum::Extension;
+use domain::entity::endpoint::EndPoint;
+
 pub async fn rent_handler() -> String {
     "rent_handler".to_string()
 }

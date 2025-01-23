@@ -1,3 +1,6 @@
+use axum::Extension;
+use domain::entity::endpoint::EndPoint;
+
 pub async fn qr_handler() -> String {
     "qr_handler".to_string()
 }

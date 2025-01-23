@@ -9,15 +9,15 @@ domain = { path = "../domain" }
 #.env
 dotenvy = "0.15.7"
 once_cell = "1.19.0"
-#seaorm
+#sea-orm
 entity.workspace = true
 migration.workspace = true
 sea-orm.workspace = true
 chrono.workspace = true
 serde_json.workspace = true
-#cloudflare
-cloudflare-r2-rs.workspace = true
 #meilisearch
 meilisearch-sdk.workspace = true
 #neo4j
 neo4rs.workspace = true
+#cloudflare r2
+cf-r2-sdk.workspace = true

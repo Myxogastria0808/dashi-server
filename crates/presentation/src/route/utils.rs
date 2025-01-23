@@ -4,9 +4,11 @@ use axum::{
     routing::{get, post},
 };
 
-pub async fn util_route() -> Router {
-    let utils_routes = Router::new()
-        .route("/healthcheck", get(healthcheck_handler))
-        .route("/login", post(login_handler));
-    Router::new().merge(Router::new().nest("/utils", utils_routes))
+pub fn util_route<S>() -> Router<S>
+where
+    S: Send + Sync + Clone + 'static,
+{
+    let utils_routes = Router::new().route("/healthcheck", get(healthcheck_handler));
+    // .route("/login", post(login_handler));
+    Router::new().nest("/utils", utils_routes)
 }

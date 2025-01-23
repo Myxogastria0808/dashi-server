@@ -4,9 +4,9 @@ use axum::{
     routing::{post, put},
 };
 
-pub async fn rent_route() -> Router {
+pub fn rent_route() -> Router {
     let rent_routes = Router::new()
         .route("/rent", post(rent_handler))
         .route("/return/:visible_id", put(return_handler));
-    Router::new().merge(Router::new().nest("/rent", rent_routes))
+    Router::new().nest("/rent", rent_routes)
 }
