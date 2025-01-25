@@ -1,12 +1,14 @@
-use std::sync::Arc;
+use axum::extract::State;
+use domain::value_object::shared_state::RwLockSharedState;
 
-use axum::Extension;
-use domain::entity::endpoint::EndPoint;
-
-pub async fn depreiation_handler() -> String {
+pub async fn depreiation_handler(State(shared_state): State<RwLockSharedState>) -> String {
+    let shared_model = shared_state.read().unwrap();
+    drop(shared_model);
     "depreiation_handler".to_string()
 }
 
-pub async fn item_handler() -> String {
+pub async fn item_handler(State(shared_state): State<RwLockSharedState>) -> String {
+    let shared_model = shared_state.read().unwrap();
+    drop(shared_model);
     "item_handler".to_string()
 }

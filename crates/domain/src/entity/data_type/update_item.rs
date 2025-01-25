@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
 pub struct UpdateItemData {
     pub parent_visible_id: String,
     pub visible_id: String,

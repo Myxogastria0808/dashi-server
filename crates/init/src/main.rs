@@ -1,4 +1,4 @@
-use domain::entity::data_type::meilisearch;
+use domain::{entity::data_type::meilisearch, repository::connection::ConnectionRepository};
 use entity::{
     item::{self, Entity as Item},
     label::{self, Entity as Label},
@@ -9,16 +9,33 @@ use sea_orm::{self, EntityTrait, Set};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
-    // Connect rdb
-    let rdb = connection::rdb::connect_postgres()
+    let connection = connection::CollectConnection::new()
         .await
-        .expect("Failed to connect to Postgres");
+        .expect("Failed to collect connection");
+    // Connect rdb
+    let rdb = connection
+        .to_owned()
+        .connect_postgres()
+        .await
+        .expect("Failed to connect to PostgreSQL");
     // Connect graphdb
-    let graphdb = connection::graphdb::connect_neo4j().await;
+    let graphdb = connection
+        .to_owned()
+        .connect_neo4j()
+        .await
+        .expect("Failed to connect to Neo4j");
     // Connect meilisearch
-    let meilisearch = connection::meilisearch::connect_meilisearch().await;
+    let meilisearch = connection
+        .to_owned()
+        .connect_meilisearch()
+        .await
+        .expect("Failed to connect to Meilisearch");
     // Connect r2
-    let r2 = connection::object_strage::connect_r2().await;
+    let r2 = connection
+        .to_owned()
+        .connect_r2()
+        .await
+        .expect("Failed to connect to R2");
 
     // Add rdb data //
     // Insert data into the Label table

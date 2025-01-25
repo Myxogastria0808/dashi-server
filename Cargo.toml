@@ -46,4 +46,6 @@ serde = { version="1.0.209", features=["derive"] }
 #neo4j
 neo4rs = "0.8.0"
 #cloudflare r2
-cf-r2-sdk = "0.1.19"
+cf-r2-sdk = "0.2.2"
+#error
+thiserror = "2.0.11"

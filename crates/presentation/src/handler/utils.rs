@@ -1,15 +1,18 @@
-use std::sync::{Arc, RwLock};
+use axum::extract::State;
+use domain::value_object::shared_state::RwLockSharedState;
 
-use axum::{Extension, extract::State};
-use domain::entity::endpoint::EndPoint;
-
-use crate::SharedState;
-
-pub async fn login_handler() -> String {
+pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> String {
+    //validation
+    let shared_model = shared_state.read().unwrap();
+    //operation
+    drop(shared_model);
     "login_handler".to_string()
 }
 
-pub async fn healthcheck_handler(State(shared_state): State<Arc<RwLock<SharedState>>>) -> String {
-    shared_state.write().unwrap();
-    "aa".to_string()
+pub async fn healthcheck_handler(State(shared_state): State<RwLockSharedState>) -> String {
+    //validation
+    let shared_model = shared_state.read().unwrap();
+    //operation
+    drop(shared_model);
+    "healthcheck_handler".to_string()
 }

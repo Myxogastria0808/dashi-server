@@ -886,9 +886,9 @@ dependencies = [
 
 [[package]]
 name = "cf-r2-sdk"
-version = "0.1.19"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5e6a93d0730b0ed41ef2f393c9a8e8a34dcb1cf3c28f52312d9f1562b36b07b"
+checksum = "64f8a58594f4c7e74924fb2ef10e16227d6c2774e2a03dd6991a8f54a2b7f083"
 dependencies = [
  "anyhow",
  "aws-sdk-s3",
@@ -1262,9 +1262,17 @@ dependencies = [
 name = "domain"
 version = "0.1.0"
 dependencies = [
+ "axum",
+ "cf-r2-sdk",
  "chrono",
+ "dotenvy",
  "entity",
+ "meilisearch-sdk",
+ "neo4rs",
+ "sea-orm 1.1.4",
  "serde",
+ "serde_json",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -2110,6 +2118,7 @@ dependencies = [
 name = "infrastructure"
 version = "0.1.0"
 dependencies = [
+ "axum",
  "cf-r2-sdk",
  "chrono",
  "domain",
@@ -2863,6 +2872,10 @@ dependencies = [
  "application",
  "axum",
  "domain",
+ "infrastructure",
+ "meilisearch-sdk",
+ "neo4rs",
+ "sea-orm 1.1.4",
  "tokio",
  "tower-http",
 ]

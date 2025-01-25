@@ -1,9 +1,10 @@
 use cf_r2_sdk::{builder::Builder, operator::Operator};
+use domain::value_object::error::connection::ConnectionError;
 use dotenvy::dotenv;
 use once_cell::sync::OnceCell;
 use std::env;
 
-pub async fn connect_r2() -> Operator {
+pub(super) async fn connect_r2() -> Result<Operator, ConnectionError> {
     // Set environment variables
     // Declaration and initialization of static variable
     static CLOUDFLARE_R2_BUCKET_NAME: OnceCell<String> = OnceCell::new();
@@ -11,49 +12,47 @@ pub async fn connect_r2() -> Operator {
     static CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID: OnceCell<String> = OnceCell::new();
     static CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY: OnceCell<String> = OnceCell::new();
     // load .env file
-    dotenv().expect(".env file not found.");
+    dotenv()?;
     // set Object value
-    let _ = CLOUDFLARE_R2_BUCKET_NAME.set(
-        env::var("CLOUDFLARE_R2_BUCKET_NAME")
-            .expect("CLOUDFLARE_R2_BUCKET_NAME not found in .env file."),
-    );
-    let _ = CLOUDFLARE_R2_URI_ENDPOINT.set(
-        env::var("CLOUDFLARE_R2_URI_ENDPOINT")
-            .expect("CLOUDFLARE_R2_URI_ENDPOINT not found in .env file."),
-    );
-    let _ = CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID.set(
-        env::var("CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID")
-            .expect("CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID not found in .env file."),
-    );
-    let _ = CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY.set(
-        env::var("CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY")
-            .expect("CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY not found in .env file."),
-    );
+    let _ = CLOUDFLARE_R2_BUCKET_NAME.set(env::var("CLOUDFLARE_R2_BUCKET_NAME")?);
+    let _ = CLOUDFLARE_R2_URI_ENDPOINT.set(env::var("CLOUDFLARE_R2_URI_ENDPOINT")?);
+    let _ = CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID
+        .set(env::var("CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID")?);
+    let _ = CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY
+        .set(env::var("CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY")?);
     //インスタンスの作成
-    Builder::new()
+    Ok(Builder::new()
         .set_bucket_name(
             CLOUDFLARE_R2_BUCKET_NAME
                 .get()
-                .expect("Failed to get CLOUDFLARE_R2_BUCKET_NAME.")
-                .clone(),
+                .ok_or(ConnectionError::DotEnvVarNotFountError(
+                    "CLOUDFLARE_R2_BUCKET_NAME".to_string(),
+                ))?
+                .to_owned(),
         )
         .set_endpoint(
             CLOUDFLARE_R2_URI_ENDPOINT
                 .get()
-                .expect("Failed to get CLOUDFLARE_R2_URI_ENDPOINT.")
-                .clone(),
+                .ok_or(ConnectionError::DotEnvVarNotFountError(
+                    "CLOUDFLARE_R2_URI_ENDPOINT".to_string(),
+                ))?
+                .to_owned(),
         )
         .set_access_key_id(
             CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID
                 .get()
-                .expect("Failed to get CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID.")
-                .clone(),
+                .ok_or(ConnectionError::DotEnvVarNotFountError(
+                    "CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID".to_string(),
+                ))?
+                .to_owned(),
         )
         .set_secret_access_key(
             CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY
                 .get()
-                .expect("Failed to get CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY.")
-                .clone(),
+                .ok_or(ConnectionError::DotEnvVarNotFountError(
+                    "CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY".to_string(),
+                ))?
+                .to_owned(),
         )
-        .create_client()
+        .create_client())
 }

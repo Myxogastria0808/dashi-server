@@ -6,8 +6,9 @@ use axum::{
     Router,
     routing::{get, post, put},
 };
+use domain::value_object::shared_state::RwLockSharedState;
 
-pub fn item_route() -> Router {
+pub fn item_route() -> Router<RwLockSharedState> {
     let item_routes = Router::new()
         .route("/search", get(search_handler))
         .route("/:visible_id", get(each_item_handler))

@@ -4,6 +4,23 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+# DDD
 entity.workspace = true
 chrono.workspace = true
 serde.workspace = true
+# .env
+dotenvy.workspace = true
+# axum
+axum.workspace = true
+# sea-orm
+sea-orm.workspace = true
+# meilisearch
+meilisearch-sdk.workspace = true
+# neo4j
+neo4rs.workspace = true
+#cloudflare r2
+cf-r2-sdk.workspace = true
+# error
+thiserror.workspace = true
+# other
+serde_json.workspace = true

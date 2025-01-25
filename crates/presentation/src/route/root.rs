@@ -1,19 +1,17 @@
 use crate::route::csv::csv_route;
 use crate::route::generate::generate_route;
 use crate::route::item::item_route;
-use crate::route::rent::rent_route;
+use crate::route::rental::rent_route;
 use crate::route::utils::util_route;
 use axum::Router;
+use domain::value_object::shared_state::RwLockSharedState;
 
-pub fn root_route<S>() -> Router<S>
-where
-    S: Send + Sync + Clone + 'static,
-{
+pub fn root_route() -> Router<RwLockSharedState> {
     let root_routes = Router::new()
-        // .merge(csv_route())
-        // .merge(generate_route())
-        // .merge(item_route())
-        // .merge(rent_route())
+        .merge(csv_route())
+        .merge(generate_route())
+        .merge(item_route())
+        .merge(rent_route())
         .merge(util_route());
     Router::new().nest("/api", root_routes)
 }
