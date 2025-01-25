@@ -6,6 +6,7 @@ use axum::{
 use serde_json::json;
 
 pub mod connection;
+pub mod healthcheck;
 
 #[derive(Debug)]
 pub struct AppError {

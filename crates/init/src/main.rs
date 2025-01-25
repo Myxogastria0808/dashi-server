@@ -15,13 +15,13 @@ async fn main() {
     // Connect rdb
     let rdb = connection
         .to_owned()
-        .connect_postgres()
+        .connect_rdb()
         .await
         .expect("Failed to connect to PostgreSQL");
     // Connect graphdb
     let graphdb = connection
         .to_owned()
-        .connect_neo4j()
+        .connect_graphdb()
         .await
         .expect("Failed to connect to Neo4j");
     // Connect meilisearch
@@ -33,7 +33,7 @@ async fn main() {
     // Connect r2
     let r2 = connection
         .to_owned()
-        .connect_r2()
+        .connect_object_strage()
         .await
         .expect("Failed to connect to R2");
 

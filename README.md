@@ -27,8 +27,12 @@ server では、Layered Architecture を採用している
 ```mermaid
 flowchart TD
     presentation --> application
+    presentation --> infrastructure
     application --> domain
     infrastructure --> domain
+    init --> infrastructure
+    infrastructure --> entity
+    migration
 ```
 
 ## presentation

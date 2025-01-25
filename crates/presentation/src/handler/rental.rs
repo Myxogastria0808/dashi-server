@@ -15,7 +15,7 @@ pub async fn rent_handler(
     "rent_handler".to_string()
 }
 
-pub async fn return_handler(
+pub async fn render_handler(
     Path(visible_id): Path<String>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {

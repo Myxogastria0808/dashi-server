@@ -16,7 +16,7 @@ members = [
     "crates/presentation",
     "crates/application",
     "crates/domain",
-    "crates/infrastructure", "crates/shared_state_model",
+    "crates/infrastructure",
 ]
 
 [workspace.package]
