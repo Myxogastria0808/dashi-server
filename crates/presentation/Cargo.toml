@@ -5,8 +5,8 @@ edition.workspace = true
 
 [dependencies]
 # DDD
-application ={ path = "../application" }
 domain = { path = "../domain" }
+# DIを使うためにinfrastructureに依存している
 infrastructure = { path = "../infrastructure" }
 # axum
 axum.workspace = true

@@ -2869,7 +2869,6 @@ dependencies = [
 name = "presentation"
 version = "0.1.0"
 dependencies = [
- "application",
  "axum",
  "domain",
  "infrastructure",

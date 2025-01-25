@@ -20,29 +20,28 @@ async fn main() {
     let _ = api().await;
 }
 
-struct SharedStateModel<T: ConnectionRepository> {
-    _connection: T,
+//SharedStateModel is a collection of infrastructure connections to abstraction of infrastructure objects.
+//The presentation and infrastructure layers rely on this Model to achieve DI.
+struct SharedStateModel {
     shared_state: SharedState,
 }
 
-impl<T: ConnectionRepository> SharedStateModel<T> {
-    pub async fn new(connection: T) -> Result<Self, ConnectionError> {
+impl SharedStateModel {
+    pub async fn new() -> Result<Self, ConnectionError> {
+        let connection = CollectConnection::new().await?;
         let shared_state = SharedState {
             graph_db: connection.connect_neo4j().await?,
             meilisearch: connection.connect_meilisearch().await?,
             rdb: connection.connect_postgres().await?,
         };
-        Ok(SharedStateModel::<T> {
-            _connection: connection,
-            shared_state,
-        })
+        Ok(SharedStateModel { shared_state })
     }
 }
 
 //axum
 async fn api() -> Result<(), AppError> {
     //Shared Object
-    let shared_state_model = SharedStateModel::new(CollectConnection::new().await?).await?;
+    let shared_state_model = SharedStateModel::new().await?;
     let shared_state: RwLockSharedState = Arc::new(RwLock::new(shared_state_model.shared_state));
     //CORS
     let cors: CorsLayer = CorsLayer::new()
