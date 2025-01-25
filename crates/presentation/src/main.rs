@@ -30,9 +30,9 @@ impl SharedStateModel {
     pub async fn new() -> Result<Self, ConnectionError> {
         let connection = CollectConnection::new().await?;
         let shared_state = SharedState {
-            graph_db: connection.connect_neo4j().await?,
-            meilisearch: connection.connect_meilisearch().await?,
-            rdb: connection.connect_postgres().await?,
+            graph_db: connection.graph_db,
+            meilisearch: connection.meilisearch,
+            rdb: connection.rdb,
         };
         Ok(SharedStateModel { shared_state })
     }
