@@ -24,7 +24,7 @@ impl UseCase {
 
 pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> String {
     //validation
-    let shared_model = shared_state.read().unwrap();
+    let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
     "login_handler".to_string()
@@ -33,16 +33,14 @@ pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> Str
 #[debug_handler]
 pub async fn healthcheck_handler(State(shared_state): State<RwLockSharedState>) -> String {
     //validation
-    let shared_model = shared_state.read().unwap();
-    {
-        //operation
-        let _a = UseCase::new()
-            .await
-            .healthcheck_usecase()
-            .await
-            .healthcheck()
-            .await;
-    }
+    let shared_model = shared_state.read().await;
+    // //operation
+    // let _a = UseCase::new()
+    //     .await
+    //     .healthcheck_usecase()
+    //     .await
+    //     .healthcheck()
+    //     .await;
     drop(shared_model);
     "healthcheck_handler".to_string()
 }

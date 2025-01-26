@@ -1262,6 +1262,7 @@ dependencies = [
 name = "domain"
 version = "0.1.0"
 dependencies = [
+ "async-std",
  "axum",
  "cf-r2-sdk",
  "chrono",
@@ -2870,6 +2871,7 @@ name = "presentation"
 version = "0.1.0"
 dependencies = [
  "application",
+ "async-std",
  "axum",
  "domain",
  "infrastructure",

@@ -11,6 +11,7 @@ serde.workspace = true
 # .env
 dotenvy.workspace = true
 # axum
+async-std.workspace = true
 axum.workspace = true
 # sea-orm
 sea-orm.workspace = true

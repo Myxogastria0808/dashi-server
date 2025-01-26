@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 
 use axum::{
-    Json,
     extract::{Path, Query, State},
-    response::IntoResponse,
+    Json,
 };
 use domain::{
     entity::data_type::{register_item::RegisterItemData, update_item::UpdateItemData},
@@ -19,7 +18,7 @@ pub async fn search_handler(
         Some(keywords) => keywords,
         None => "",
     };
-    let shared_model = shared_state.read().unwrap();
+    let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
     "search_handler".to_string()
@@ -30,7 +29,7 @@ pub async fn each_item_handler(
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
     //validation
-    let shared_model = shared_state.read().unwrap();
+    let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
     "each_item_handler".to_string()
@@ -41,7 +40,7 @@ pub async fn connctor_handler(
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
     //validation
-    let shared_model = shared_state.read().unwrap();
+    let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
     "connctor_handler".to_string()
@@ -52,7 +51,7 @@ pub async fn cable_handler(
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
     //validation
-    let shared_model = shared_state.read().unwrap();
+    let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
     "cable_handler".to_string()
@@ -63,7 +62,7 @@ pub async fn register_handler(
     Json(register_data): Json<RegisterItemData>,
 ) -> String {
     //validation
-    let shared_model = shared_state.write().unwrap();
+    let shared_model = shared_state.write().await;
     //operation
     drop(shared_model);
     "register_handler".to_string()
@@ -74,7 +73,7 @@ pub async fn update_handler(
     Json(update_data): Json<UpdateItemData>,
 ) -> String {
     //validation
-    let shared_model = shared_state.write().unwrap();
+    let shared_model = shared_state.write().await;
     //operation
     drop(shared_model);
     "update_handler".to_string()
@@ -85,7 +84,7 @@ pub async fn delete_handler(
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
     //validation
-    let shared_model = shared_state.write().unwrap();
+    let shared_model = shared_state.write().await;
     //operation
     drop(shared_model);
     "delete_handler".to_string()
