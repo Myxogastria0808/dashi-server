@@ -4,7 +4,7 @@ use entity::{
     label::{self, Entity as Label},
 };
 use infrastructure::connection;
-use neo4rs::{Node, query};
+use neo4rs::{query, Node};
 use sea_orm::{self, EntityTrait, Set};
 
 #[tokio::main(flavor = "current_thread")]
@@ -41,6 +41,7 @@ async fn main() {
     // Insert data into the Label table
     let label_model: label::ActiveModel = label::ActiveModel {
         visible_id: Set("0000".to_string()),
+        is_max: Set(true),
         record: Set(label::Record::Nothing),
         ..Default::default()
     };

@@ -1,5 +1,5 @@
 use application::utils::healthcheck::HealthCheckUseCase;
-use axum::{debug_handler, extract::State, response::IntoResponse};
+use axum::{debug_handler, extract::State};
 use domain::{
     repository::healthcheck::HealthCheckRepository,
     value_object::{error::AppError, shared_state::RwLockSharedState},
@@ -12,7 +12,7 @@ struct UseCase {
 
 impl UseCase {
     pub async fn new() -> Self {
-        let healthcheck_usecase = HealthCheckUseCase::new(HealthCheck::new());
+        let healthcheck_usecase = HealthCheckUseCase::new(HealthCheck::new()).await;
         Self {
             healthcheck_usecase,
         }
@@ -31,16 +31,18 @@ pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> Str
 }
 
 #[debug_handler]
-pub async fn healthcheck_handler(State(shared_state): State<RwLockSharedState>) -> String {
+pub async fn healthcheck_handler(
+    State(shared_state): State<RwLockSharedState>,
+) -> Result<(), AppError> {
     //validation
     let shared_model = shared_state.read().await;
-    // //operation
-    // let _a = UseCase::new()
-    //     .await
-    //     .healthcheck_usecase()
-    //     .await
-    //     .healthcheck()
-    //     .await;
+    //operation
+    UseCase::new()
+        .await
+        .healthcheck_usecase()
+        .await
+        .healthcheck()
+        .await?;
     drop(shared_model);
-    "healthcheck_handler".to_string()
+    Ok(())
 }

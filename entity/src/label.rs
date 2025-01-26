@@ -17,10 +17,9 @@ pub enum Record {
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "label")]
 pub struct Model {
-    #[sea_orm(primary_key)]
-    pub id: i32,
-    #[sea_orm(unique)]
+    #[sea_orm(primary_key, auto_increment = false)]
     pub visible_id: String,
+    pub is_max: bool,
     pub record: Record,
 }
 

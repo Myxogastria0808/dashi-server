@@ -27,6 +27,7 @@ server では、Layered Architecture を採用している
 ```mermaid
 flowchart TD
     presentation --> application
+    presentation --> domain
     presentation --> infrastructure
     application --> domain
     infrastructure --> domain
@@ -65,6 +66,14 @@ cargo run --bin presentation
 DATABASE_URL="postgres://<username>:<password>@<ip_address>:<port>/<database_name>" sea-orm-cli migrate refresh
 ```
 
+# entity の生成
+
+```sh
+sea-orm-cli generate entity \
+    -u <DATABASE_URL> \
+    -o entity/src
+```
+
 # initilizer の実行
 
 ```sh
@@ -96,8 +105,8 @@ erDiagram
         datetime UpdatedAt "Utc::now().naive_utc()"
     }
     Label {
-        i32 Id PK "1"
-        String VisibleId PK "0000"
+        String VisibleId UK "0000"
+        boolean IsMax "true"
         String Record "Record::Nothing"
     }
 ```

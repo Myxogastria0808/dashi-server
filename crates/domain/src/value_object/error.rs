@@ -1,11 +1,12 @@
 use axum::{
-    Json,
     http::StatusCode,
     response::{IntoResponse, Response},
+    Json,
 };
 use serde_json::json;
 
 pub mod connection;
+pub mod generate;
 pub mod healthcheck;
 
 #[derive(Debug)]
