@@ -6,7 +6,7 @@ edition.workspace = true
 [dependencies]
 # DDD
 domain = { path = "../domain" }
-# DIを使うためにinfrastructureに依存している
+application = { path = "../application" }
 infrastructure = { path = "../infrastructure" }
 # axum
 axum.workspace = true

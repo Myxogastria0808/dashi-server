@@ -10,6 +10,8 @@ pub enum HealthCheckError {
     MeiliSearchError(#[from] meilisearch_sdk::errors::Error),
     #[error(transparent)]
     RDBError(#[from] sea_orm::DbErr),
+    #[error(transparent)]
+    ConnectionError(#[from] crate::value_object::error::connection::ConnectionError),
 }
 
 impl From<HealthCheckError> for AppError {
@@ -28,6 +30,11 @@ impl From<HealthCheckError> for AppError {
             HealthCheckError::RDBError(e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "healthcheck/rdb".to_string(),
+                message: e.to_string(),
+            },
+            HealthCheckError::ConnectionError(e) => AppError {
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+                code: "healthcheck/connection".to_string(),
                 message: e.to_string(),
             },
         }

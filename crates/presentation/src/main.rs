@@ -1,13 +1,8 @@
 use axum::{Router, extract::DefaultBodyLimit, http::Method, routing::get};
-use domain::{
-    repository::connection::ConnectionRepository,
-    value_object::{
-        error::{AppError, connection::ConnectionError},
-        shared_state::{RwLockSharedState, SharedState},
-    },
+use domain::value_object::{
+    error::AppError,
+    shared_state::{RwLockSharedState, SharedState},
 };
-use infrastructure::connection::CollectConnection;
-use std::sync::{Arc, RwLock};
 use tower_http::cors::{Any, CorsLayer};
 // use utoipa::OpenApi;
 // use utoipa_swagger_ui::SwaggerUi;
@@ -20,29 +15,10 @@ async fn main() {
     let _ = api().await;
 }
 
-//SharedStateModel is a collection of infrastructure connections to abstraction of infrastructure objects.
-//The presentation and infrastructure layers rely on this Model to achieve DI.
-struct SharedStateModel {
-    shared_state: SharedState,
-}
-
-impl SharedStateModel {
-    pub async fn new() -> Result<Self, ConnectionError> {
-        let connection = CollectConnection::new().await?;
-        let shared_state = SharedState {
-            graph_db: connection.graph_db,
-            meilisearch: connection.meilisearch,
-            rdb: connection.rdb,
-        };
-        Ok(SharedStateModel { shared_state })
-    }
-}
-
 //axum
 async fn api() -> Result<(), AppError> {
     //Shared Object
-    let shared_state_model = SharedStateModel::new().await?;
-    let shared_state: RwLockSharedState = Arc::new(RwLock::new(shared_state_model.shared_state));
+    let shared_state: RwLockSharedState = Arc::new(RwLock::new(SharedState {}));
     //CORS
     let cors: CorsLayer = CorsLayer::new()
         .allow_methods([Method::POST, Method::GET, Method::DELETE, Method::PUT])

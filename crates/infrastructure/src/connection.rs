@@ -16,7 +16,7 @@ use sea_orm::DatabaseConnection;
 
 #[derive(Clone)]
 pub struct CollectConnection {
-    pub graph_db: Graph,
+    pub graphdb: Graph,
     pub meilisearch: Client,
     pub rdb: DatabaseConnection,
 }
@@ -26,11 +26,11 @@ impl ConnectionRepository for CollectConnection {
     where
         Self: std::marker::Sized,
     {
-        let graph_db = connect_neo4j().await?;
+        let graphdb = connect_neo4j().await?;
         let meilisearch = connect_meilisearch().await?;
         let rdb = connect_postgres().await?;
         Ok(CollectConnection {
-            graph_db,
+            graphdb,
             meilisearch,
             rdb,
         })

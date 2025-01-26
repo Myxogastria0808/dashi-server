@@ -1,33 +1,28 @@
+use crate::connection;
 use domain::{
-    repository::healthcheck::HealthCheckRepository,
+    repository::{connection::ConnectionRepository, healthcheck::HealthCheckRepository},
     value_object::error::healthcheck::HealthCheckError,
 };
 use graphdb::healthcheck_graphdb;
 use meilisearch::healthcheck_meilisearch;
-use meilisearch_sdk::client::Client;
-use neo4rs::Graph;
 use rdb::healthcheck_rdb;
-use sea_orm::DatabaseConnection;
 
 pub mod graphdb;
 pub mod meilisearch;
 pub mod rdb;
 
 #[derive(Clone)]
-pub struct HealthCheck {
-    pub graphdb: Graph,
-    pub meilisearch: Client,
-    pub rdb: DatabaseConnection,
-}
+pub struct HealthCheck;
 
 impl HealthCheckRepository for HealthCheck {
-    async fn healthcheck_graphdb(&self) -> Result<(), HealthCheckError> {
-        healthcheck_graphdb(self.graphdb.to_owned()).await
+    fn new() -> Self {
+        HealthCheck
     }
-    async fn healthcheck_meilisearch(&self) -> Result<(), HealthCheckError> {
-        healthcheck_meilisearch(self.meilisearch.to_owned()).await
-    }
-    async fn healthcheck_rdb(&self) -> Result<(), HealthCheckError> {
-        healthcheck_rdb(self.rdb.to_owned()).await
+    async fn healthcheck(&self) -> Result<(), HealthCheckError> {
+        let connect_collections = connection::CollectConnection::new().await?;
+        healthcheck_graphdb(connect_collections.graphdb).await?;
+        healthcheck_meilisearch(connect_collections.meilisearch).await?;
+        healthcheck_rdb(connect_collections.rdb).await?;
+        Ok(())
     }
 }
