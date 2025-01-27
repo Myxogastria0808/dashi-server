@@ -9,22 +9,47 @@ use sea_orm::{self, EntityTrait, Set};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
+    //tracing
+    let subscriber = tracing_subscriber::FmtSubscriber::builder()
+        .with_max_level(tracing::Level::DEBUG)
+        .finish();
+    tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
     // Connect rdb
-    let rdb = connection::CollectConnection::connect_rdb()
-        .await
-        .expect("Failed to connect to PostgreSQL");
+    let rdb = match connection::CollectConnection::connect_rdb().await {
+        Ok(rdb) => rdb,
+        Err(e) => {
+            tracing::error!("Failed to connect to PostgreSQL.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    };
     // Connect graphdb
-    let graphdb = connection::CollectConnection::connect_graphdb()
-        .await
-        .expect("Failed to connect to Neo4j");
+    let graphdb = match connection::CollectConnection::connect_graphdb().await {
+        Ok(graphdb) => graphdb,
+        Err(e) => {
+            tracing::error!("Failed to connect to Neo4j.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    };
     // Connect meilisearch
-    let meilisearch = connection::CollectConnection::connect_meilisearch()
-        .await
-        .expect("Failed to connect to Meilisearch");
+    let meilisearch = match connection::CollectConnection::connect_meilisearch().await {
+        Ok(meilisearch) => meilisearch,
+        Err(e) => {
+            tracing::error!("Failed to connect to Meilisearch.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    };
     // Connect r2
-    let r2 = connection::CollectConnection::connect_object_strage()
-        .await
-        .expect("Failed to connect to R2");
+    let r2 = match connection::CollectConnection::connect_object_strage().await {
+        Ok(r2) => r2,
+        Err(e) => {
+            tracing::error!("Failed to connect to R2.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    };
 
     // Add rdb data //
     // Insert data into the Label table
@@ -33,14 +58,17 @@ async fn main() {
         is_max: Set(true),
         record: Set(label::Record::Nothing),
     };
-    let inserted_label_model = Label::insert(label_model)
-        .exec(&rdb)
-        .await
-        .expect("Failed to insert label");
-    println!(
-        "[INFO]: Inserted to Label Table: {:?}",
-        inserted_label_model
-    );
+    let inserted_label_model = Label::insert(label_model).exec(&rdb).await;
+    match inserted_label_model {
+        Ok(label_model) => {
+            tracing::info!("Inserted to Label Table: {:?}", label_model);
+        }
+        Err(e) => {
+            tracing::error!("Failed to insert label.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    }
     // Insert data into the Item table
     let root_item_connector: Vec<String> = Vec::new();
     let item_model: item::ActiveModel = item::ActiveModel {
@@ -57,11 +85,16 @@ async fn main() {
         updated_at: Set(chrono::Utc::now().naive_local()),
         ..Default::default()
     };
-    let inserted_item_model = Item::insert(item_model)
-        .exec(&rdb)
-        .await
-        .expect("Failed to insert item");
-    println!("[INFO]: Inserted to Item Table: {:?}", inserted_item_model);
+    match Item::insert(item_model).exec(&rdb).await {
+        Ok(item_model) => {
+            tracing::info!("Inserted to Item Table: {:?}", item_model);
+        }
+        Err(e) => {
+            tracing::error!("Failed to insert item.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    };
 
     // Add meilisearch data //
     let meilisearch_model: meilisearch::MeilisearchData = meilisearch::MeilisearchData {
@@ -82,46 +115,99 @@ async fn main() {
         created_at: chrono::Utc::now().naive_local(),
         updated_at: chrono::Utc::now().naive_local(),
     };
-    let insert_meilisearch_item_model = meilisearch
+    match meilisearch
         .index("item")
         .add_documents(&[meilisearch_model], Some("id"))
         .await
-        .unwrap();
-    println!(
-        "[INFO]: MeiliSearch result of item\n{:#?}",
-        insert_meilisearch_item_model
-    );
+    {
+        Ok(insert_meilisearch_item_model) => {
+            tracing::info!("MeiliSearch result of item.");
+            tracing::info!("{:#?}", insert_meilisearch_item_model);
+        }
+        Err(e) => {
+            tracing::error!("Failed to insert meilisearch.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    }
 
     // Add graphdb data //
-    graphdb
+    match graphdb
+        .to_owned()
         .run(query("CREATE (item:Item {id: $id})").param("id", 1))
         .await
-        .expect("Failed to create item node");
+    {
+        Ok(graphdb) => graphdb,
+        Err(e) => {
+            tracing::error!("Failed to create item node.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    };
     // get node
-    let mut insert_graphdb_item_node = graphdb
+    let mut insert_graphdb_item_node = match graphdb
         .execute(query("MATCH (item:Item {id: $id}) RETURN item").param("id", 1))
         .await
-        .unwrap();
+    {
+        Ok(graphdb) => graphdb,
+        Err(e) => {
+            tracing::error!("Failed to get item node.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    };
     // parse node
     loop {
-        let item = insert_graphdb_item_node.next().await.unwrap();
+        let item = match insert_graphdb_item_node.next().await {
+            Ok(item) => item,
+            Err(e) => {
+                tracing::error!("Failed to get item.");
+                tracing::error!("{}", e.to_string());
+                return;
+            }
+        };
         let row = match item {
             Some(row) => row,
             None => break,
         };
-        let node: Node = row.get::<Node>("item").unwrap();
-        let id: i64 = node.get::<i64>("id").unwrap();
-        println!("[INFO]: GraphDB result of item\nid: {:#?}", id);
+        let node: Node = match row.get::<Node>("item") {
+            Ok(node) => node,
+            Err(e) => {
+                tracing::error!("Failed to get node.");
+                tracing::error!("{}", e.to_string());
+                return;
+            }
+        };
+        let id: i64 = match node.get::<i64>("id") {
+            Ok(id) => id,
+            Err(e) => {
+                tracing::error!("Failed to get id.");
+                tracing::error!("{}", e.to_string());
+                return;
+            }
+        };
+        tracing::info!("GraphDB result of item.");
+        tracing::info!("node: {:#?}", id);
     }
 
     // Add r2 data //
-    r2.upload_file("1.webp", "image/webp", "./crates/init/image/tsukuba.webp")
+    match r2
+        .upload_file("1.webp", "image/webp", "./crates/init/image/tsukuba.webp")
         .await
-        .expect("Failed to upload file");
+    {
+        Ok(_) => {
+            tracing::info!("Uploaded image file.");
+        }
+        Err(e) => {
+            tracing::error!("Failed to upload file.");
+            tracing::error!("{:?}", e);
+            return;
+        }
+    };
 
     // Close rdb
     let _ = rdb.close().await;
 
     // Finish!
-    println!("[INFO]: Finish!");
+    tracing::info!("Finish!");
 }

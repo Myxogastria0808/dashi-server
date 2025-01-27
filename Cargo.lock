@@ -2159,6 +2159,8 @@ dependencies = [
  "sea-orm 1.1.4",
  "serde_json",
  "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

@@ -15,3 +15,6 @@ serde_json.workspace = true
 chrono.workspace = true
 # neo4j
 neo4rs.workspace = true
+# logging
+tracing.workspace = true
+tracing-subscriber.workspace = true

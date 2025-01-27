@@ -18,18 +18,18 @@ async fn main() {
 
 //axum
 async fn api() -> Result<(), ApiError> {
-    //tracing
+    // tracing
     let subscriber = tracing_subscriber::FmtSubscriber::builder()
         .with_max_level(tracing::Level::DEBUG)
         .finish();
     tracing::subscriber::set_global_default(subscriber)?;
-    //Shared Object
+    // Shared Object
     let shared_state: RwLockSharedState = Arc::new(RwLock::new(SharedState {}));
-    //CORS
+    // CORS
     let cors: CorsLayer = CorsLayer::new()
         .allow_methods([Method::POST, Method::GET, Method::DELETE, Method::PUT])
         .allow_origin(Any);
-    //Router
+    // Router
     let app: Router<()> = Router::new()
         .route("/", get(ping))
         .merge(route::root::root_route())
@@ -37,7 +37,7 @@ async fn api() -> Result<(), ApiError> {
         .layer(cors)
         .layer(DefaultBodyLimit::max(1024 * 1024 * 100)) //100MB
         .with_state(Arc::clone(&shared_state));
-    //Server
+    // Server
     let listener = tokio::net::TcpListener::bind("0.0.0.0:5000").await?;
     tracing::debug!("listening on http://{}", listener.local_addr()?);
     axum::serve(listener, app).await?;
