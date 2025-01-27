@@ -30,9 +30,10 @@ flowchart TD
     presentation --> domain
     presentation --> infrastructure
     application --> domain
+    domain --> entity
     infrastructure --> domain
-    init --> infrastructure
     infrastructure --> entity
+    init --> infrastructure
     migration
 ```
 

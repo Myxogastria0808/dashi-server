@@ -5,6 +5,7 @@ use axum::{
 };
 use serde_json::json;
 
+pub mod api;
 pub mod connection;
 pub mod generate;
 pub mod healthcheck;

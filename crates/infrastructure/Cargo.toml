@@ -24,3 +24,6 @@ neo4rs.workspace = true
 cf-r2-sdk.workspace = true
 # other
 serde_json.workspace = true
+radix_fmt.workspace = true
+# logging
+tracing.workspace = true

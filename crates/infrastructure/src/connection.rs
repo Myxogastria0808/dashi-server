@@ -1,8 +1,3 @@
-pub mod graphdb;
-pub mod meilisearch;
-pub mod object_strage;
-pub mod rdb;
-
 use crate::connection::graphdb::connect_neo4j;
 use crate::connection::meilisearch::connect_meilisearch;
 use crate::connection::object_strage::connect_r2;
@@ -13,6 +8,11 @@ use domain::value_object::error::connection::ConnectionError;
 use meilisearch_sdk::client::Client;
 use neo4rs::Graph;
 use sea_orm::DatabaseConnection;
+
+pub mod graphdb;
+pub mod meilisearch;
+pub mod object_strage;
+pub mod rdb;
 
 #[derive(Clone)]
 pub struct CollectConnection {
@@ -35,16 +35,16 @@ impl ConnectionRepository for CollectConnection {
             rdb,
         })
     }
-    async fn connect_graphdb(&self) -> Result<Graph, ConnectionError> {
+    async fn connect_graphdb() -> Result<Graph, ConnectionError> {
         connect_neo4j().await
     }
-    async fn connect_meilisearch(&self) -> Result<Client, ConnectionError> {
+    async fn connect_meilisearch() -> Result<Client, ConnectionError> {
         connect_meilisearch().await
     }
-    async fn connect_object_strage(&self) -> Result<Operator, ConnectionError> {
+    async fn connect_object_strage() -> Result<Operator, ConnectionError> {
         connect_r2().await
     }
-    async fn connect_rdb(&self) -> Result<DatabaseConnection, ConnectionError> {
+    async fn connect_rdb() -> Result<DatabaseConnection, ConnectionError> {
         connect_postgres().await
     }
 }

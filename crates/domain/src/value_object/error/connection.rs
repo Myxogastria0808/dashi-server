@@ -34,7 +34,7 @@ impl From<ConnectionError> for AppError {
             ConnectionError::DotEnvVarNotFountError(e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "connection/dotenv-var-not-found".to_string(),
-                message: e,
+                message: format!("Failed to get {}", e),
             },
             ConnectionError::GraphDBError(e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,

@@ -9,31 +9,20 @@ use sea_orm::{self, EntityTrait, Set};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
-    let connection = connection::CollectConnection::new()
-        .await
-        .expect("Failed to collect connection");
     // Connect rdb
-    let rdb = connection
-        .to_owned()
-        .connect_rdb()
+    let rdb = connection::CollectConnection::connect_rdb()
         .await
         .expect("Failed to connect to PostgreSQL");
     // Connect graphdb
-    let graphdb = connection
-        .to_owned()
-        .connect_graphdb()
+    let graphdb = connection::CollectConnection::connect_graphdb()
         .await
         .expect("Failed to connect to Neo4j");
     // Connect meilisearch
-    let meilisearch = connection
-        .to_owned()
-        .connect_meilisearch()
+    let meilisearch = connection::CollectConnection::connect_meilisearch()
         .await
         .expect("Failed to connect to Meilisearch");
     // Connect r2
-    let r2 = connection
-        .to_owned()
-        .connect_object_strage()
+    let r2 = connection::CollectConnection::connect_object_strage()
         .await
         .expect("Failed to connect to R2");
 
@@ -43,7 +32,6 @@ async fn main() {
         visible_id: Set("0000".to_string()),
         is_max: Set(true),
         record: Set(label::Record::Nothing),
-        ..Default::default()
     };
     let inserted_label_model = Label::insert(label_model)
         .exec(&rdb)

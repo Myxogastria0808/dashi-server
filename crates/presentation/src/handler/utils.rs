@@ -12,7 +12,7 @@ struct UseCase {
 
 impl UseCase {
     pub async fn new() -> Self {
-        let healthcheck_usecase = HealthCheckUseCase::new(HealthCheck::new()).await;
+        let healthcheck_usecase = HealthCheckUseCase::new(HealthCheck::new().await).await;
         Self {
             healthcheck_usecase,
         }
@@ -23,6 +23,7 @@ impl UseCase {
 }
 
 pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> String {
+    tracing::info!("reached utils/login handler.");
     //validation
     let shared_model = shared_state.read().await;
     //operation
@@ -34,6 +35,7 @@ pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> Str
 pub async fn healthcheck_handler(
     State(shared_state): State<RwLockSharedState>,
 ) -> Result<(), AppError> {
+    tracing::info!("reached utils/healthcheck handler.");
     //validation
     let shared_model = shared_state.read().await;
     //operation

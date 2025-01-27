@@ -1,0 +1,92 @@
+use domain::value_object::error::generate::GenerateError;
+use entity::label::{self, Entity as Label, Record};
+use radix_fmt::radix_36;
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
+    Set,
+};
+
+pub(super) async fn generate(
+    rdb: DatabaseConnection,
+    quantity: u32,
+    qr_or_barcode: Record,
+) -> Result<Vec<String>, GenerateError> {
+    let max_label_models = Label::find()
+        .filter(label::Column::IsMax.eq(true))
+        .all(&rdb)
+        .await?;
+    // validation of IsMax
+    if max_label_models.len() != 1 {
+        return Err(GenerateError::IsMaxBreakError(format!(
+            "{}",
+            max_label_models.len()
+        )));
+    }
+    let max_label_model: label::Model = max_label_models[0].to_owned();
+    //validation of Underflow
+    if quantity == 0 {
+        return Err(GenerateError::UnderflowError(format!("{}", quantity)));
+    }
+    // validation of Overflow
+    let visible_id_10bit = u32::from_str_radix(&max_label_model.visible_id, 36)?;
+    //Maxmuim isuue limit is 36^4 - 1
+    let max = 36u32.pow(4) - 1;
+    if visible_id_10bit + quantity > max {
+        return Err(GenerateError::OverflowError(format!(
+            "{}",
+            max - visible_id_10bit
+        )));
+    }
+    //update IsMax of current max label
+    let mut max_label_model = max_label_model.into_active_model();
+    max_label_model.is_max = Set(false);
+    let max_label_model = max_label_model.update(&rdb).await;
+    match max_label_model {
+        Ok(result) => {
+            tracing::info!("IsMax of current max label is updated.");
+            tracing::debug!("{:?}", result);
+        }
+        Err(e) => {
+            tracing::error!("Failed to update IsMax of current max label.");
+            return Err(e.into());
+        }
+    }
+
+    //generate new labels
+    let mut new_label_models: Vec<label::ActiveModel> = Vec::new();
+    let mut new_label_visible_id: Vec<String> = Vec::new();
+    for i in 1..=quantity {
+        let visible_id = radix_36(visible_id_10bit + i).to_string().to_uppercase();
+        new_label_visible_id.push(visible_id.to_owned());
+        if i == quantity {
+            //IsMax: true (last)s
+            let insert_label_model = label::ActiveModel {
+                visible_id: Set(visible_id.to_owned()),
+                is_max: Set(true),
+                record: Set(qr_or_barcode.to_owned()),
+            };
+            new_label_models.push(insert_label_model);
+        } else {
+            //IsMax: false (not last)
+            let insert_label_model = label::ActiveModel {
+                visible_id: Set(visible_id.to_owned()),
+                is_max: Set(false),
+                record: Set(qr_or_barcode.to_owned()),
+            };
+            new_label_models.push(insert_label_model);
+        }
+    }
+    let new_label_models = Label::insert_many(new_label_models).exec(&rdb).await;
+    match new_label_models {
+        Ok(result) => {
+            tracing::info!("New labels are generated.");
+            tracing::debug!("{:?}", result);
+        }
+        Err(e) => {
+            tracing::error!("Failed to generate new labels.");
+            return Err(e.into());
+        }
+    }
+
+    Ok(new_label_visible_id)
+}

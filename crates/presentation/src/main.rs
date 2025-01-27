@@ -1,7 +1,7 @@
 use async_std::sync::{Arc, RwLock};
 use axum::{extract::DefaultBodyLimit, http::Method, routing::get, Router};
 use domain::value_object::{
-    error::AppError,
+    error::api::ApiError,
     shared_state::{RwLockSharedState, SharedState},
 };
 use tower_http::cors::{Any, CorsLayer};
@@ -17,7 +17,12 @@ async fn main() {
 }
 
 //axum
-async fn api() -> Result<(), AppError> {
+async fn api() -> Result<(), ApiError> {
+    //tracing
+    let subscriber = tracing_subscriber::FmtSubscriber::builder()
+        .with_max_level(tracing::Level::DEBUG)
+        .finish();
+    tracing::subscriber::set_global_default(subscriber)?;
     //Shared Object
     let shared_state: RwLockSharedState = Arc::new(RwLock::new(SharedState {}));
     //CORS
@@ -33,13 +38,14 @@ async fn api() -> Result<(), AppError> {
         .layer(DefaultBodyLimit::max(1024 * 1024 * 100)) //100MB
         .with_state(Arc::clone(&shared_state));
     //Server
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:5000").await.unwrap();
-    println!("listening on http://{}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:5000").await?;
+    tracing::debug!("listening on http://{}", listener.local_addr()?);
+    axum::serve(listener, app).await?;
     Ok(())
 }
 
 //* dummy *//
 async fn ping() -> String {
+    tracing::info!("reached dummy handler.");
     "pong!".to_string()
 }

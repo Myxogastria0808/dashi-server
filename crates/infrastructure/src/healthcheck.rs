@@ -15,7 +15,7 @@ pub mod rdb;
 pub struct HealthCheck;
 
 impl HealthCheckRepository for HealthCheck {
-    fn new() -> Self {
+    async fn new() -> Self {
         HealthCheck
     }
     async fn healthcheck(&self) -> Result<(), HealthCheckError> {

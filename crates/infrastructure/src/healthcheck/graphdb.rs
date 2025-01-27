@@ -1,5 +1,5 @@
 use domain::value_object::error::healthcheck::HealthCheckError;
-use neo4rs::{Graph, query};
+use neo4rs::{query, Graph};
 
 pub(super) async fn healthcheck_graphdb(graphdb: Graph) -> Result<(), HealthCheckError> {
     // test
@@ -7,5 +7,6 @@ pub(super) async fn healthcheck_graphdb(graphdb: Graph) -> Result<(), HealthChec
     let _ = graphdb
         .execute(query("MATCH (item:Item {id: $id}) RETURN item").param("id", 1))
         .await?;
+    tracing::info!("GraphDB is healthy.");
     Ok(())
 }

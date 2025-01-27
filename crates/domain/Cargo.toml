@@ -23,5 +23,7 @@ neo4rs.workspace = true
 cf-r2-sdk.workspace = true
 # error
 thiserror.workspace = true
+# logging
+tracing.workspace = true
 # other
 serde_json.workspace = true
