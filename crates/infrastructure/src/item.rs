@@ -8,6 +8,7 @@ use domain::{
 use serde::Deserialize;
 
 pub mod delete;
+pub mod read;
 pub mod register;
 pub mod update;
 
