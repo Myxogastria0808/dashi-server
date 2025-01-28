@@ -1,5 +1,3 @@
-use std::fmt::DebugStruct;
-
 use domain::{entity::data_type::meilisearch, repository::connection::ConnectionRepository};
 use entity::{
     item::{self, Entity as Item},

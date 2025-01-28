@@ -35,8 +35,6 @@ pub enum RegisterItemError {
     #[error(transparent)]
     GraphDBError(#[from] neo4rs::Error),
     #[error(transparent)]
-    GraphDBParseError(#[from] neo4rs::DeError),
-    #[error(transparent)]
     MeiliSearchError(#[from] meilisearch_sdk::errors::Error),
     #[error(transparent)]
     RDBError(#[from] sea_orm::DbErr),
@@ -125,11 +123,6 @@ impl From<RegisterItemError> for AppError {
             RegisterItemError::GraphDBError(e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/graphdb".to_string(),
-                message: e.to_string(),
-            },
-            RegisterItemError::GraphDBParseError(e) => AppError {
-                status_code: StatusCode::INTERNAL_SERVER_ERROR,
-                code: "register-item/graphdb-parse".to_string(),
                 message: e.to_string(),
             },
             RegisterItemError::MeiliSearchError(e) => AppError {

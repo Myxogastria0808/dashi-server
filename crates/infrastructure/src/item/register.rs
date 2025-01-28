@@ -7,7 +7,7 @@ use entity::{
     label::Entity as Label,
 };
 use meilisearch_sdk::client::Client;
-use neo4rs::{query, Graph, Node};
+use neo4rs::{query, Graph};
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
     Set,
@@ -19,7 +19,7 @@ pub(super) async fn register(
     meilisearch: Client,
     register_item_data: RegisterItemData,
 ) -> Result<(), RegisterItemError> {
-    //* validation *//
+    ////* validation *////
     //* validation of name is not empty *//
     if register_item_data.name.chars().count() == 0 {
         return Err(RegisterItemError::ItemNameEmptyError);
@@ -134,23 +134,9 @@ pub(super) async fn register(
     let _ = filter_query;
     let _ = meilisearch_item;
     // validation of parent_viible_id is exist in GraphDB.
-    let mut parent_item_node = graphdb
+    let _ = graphdb
         .execute(query("MATCH (item:Item {id: $id}) RETURN item").param("id", parent_item_model.id))
         .await?;
-    //TODO: delete under loop code
-    //test
-    loop {
-        let item = parent_item_node.next().await?;
-        let row = match item {
-            Some(row) => row,
-            None => break,
-        };
-        let node = row.get::<Node>("item")?;
-        let id = node.get::<i64>("id")?;
-        tracing::debug!("parent node id: {}", id);
-    }
-    //drop parent_item_node
-    let _ = parent_item_node;
 
     //* validation of not conflict color *//
     if register_item_data.color.chars().count() != 0 {
@@ -197,7 +183,7 @@ pub(super) async fn register(
         }
     }
 
-    //* operation *//
+    ////* operation *////
     //* insert to RDB *//
     let item_model = item::ActiveModel {
         visible_id: Set(register_item_data.visible_id.to_owned()),
@@ -277,7 +263,7 @@ pub(super) async fn register(
 
     //* insert to GraphDB *//
     match graphdb
-        .run(query("MATCH (parent:Item {id: $parent_id}) CREAT (child:Item {id: $child_id})-[relation:ItemTree]->(parent)")
+        .run(query("MATCH (parent:Item {id: $parent_id}) CREATE (child:Item {id: $child_id})-[relation:ItemTree]->(parent)")
         .param("parent_id", parent_item_model.id)
         .param("child_id", registered_item_model.id))
         .await
@@ -347,15 +333,15 @@ async fn rollback_rdb(
             tracing::error!(
                 "Failed to rollback registed item in Item Table (delete registered item)."
             );
-            tracing::debug!("Rollbaack Summary");
-            tracing::debug!("RDB: Failed");
+            tracing::warn!("Rollbaack Summary");
+            tracing::warn!("RDB: Failed");
             return Err(RegisterItemError::RDBError(e));
         }
     };
-    tracing::debug!("Rollbacked registed item in Item Table (delete registered item).");
+    tracing::info!("Rollbacked registed item in Item Table (delete registered item).");
     tracing::debug!("{:#?}", item_model);
-    tracing::debug!("Rollback Summary");
-    tracing::debug!("RDB: Success");
+    tracing::warn!("Rollback Summary");
+    tracing::warn!("RDB: Success");
     Ok(())
 }
 
@@ -374,14 +360,14 @@ async fn rollback_meilisearch(
             tracing::error!(
                 "Failed to rollback registed item in MeiliSearch (delete registered item)."
             );
-            tracing::debug!("Rollback Summary");
-            tracing::debug!("MeiliSearch: Failed");
+            tracing::warn!("Rollback Summary");
+            tracing::warn!("MeiliSearch: Failed");
             return Err(RegisterItemError::MeiliSearchError(e));
         }
     };
     tracing::info!("Rollbacked registed item in MeiliSearch (delete registered item).");
     tracing::debug!("{:#?}", meilisearch_model);
-    tracing::debug!("Rollack Summary");
-    tracing::debug!("MeiliSearch: Success");
+    tracing::warn!("Rollack Summary");
+    tracing::warn!("MeiliSearch: Success");
     Ok(())
 }

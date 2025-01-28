@@ -6,8 +6,6 @@ use sea_orm::{
     Set,
 };
 
-use crate::item::RegisterItem;
-
 pub(super) async fn generate(
     rdb: DatabaseConnection,
     quantity: u32,
