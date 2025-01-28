@@ -1,8 +1,5 @@
 use domain::{
-    entity::data_type::{
-        meilisearch::{self, MeilisearchData},
-        register_item::RegisterItemData,
-    },
+    entity::data_type::{meilisearch::MeilisearchData, register_item::RegisterItemData},
     value_object::error::{critical_incident, register_item::RegisterItemError},
 };
 use entity::{
@@ -10,7 +7,7 @@ use entity::{
     label::Entity as Label,
 };
 use meilisearch_sdk::client::Client;
-use neo4rs::{query, Graph};
+use neo4rs::{query, Graph, Node};
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
     Set,
@@ -23,11 +20,12 @@ pub(super) async fn register(
     register_item_data: RegisterItemData,
 ) -> Result<(), RegisterItemError> {
     //* validation *//
-    // validation of name is not empty
+    //* validation of name is not empty *//
     if register_item_data.name.chars().count() == 0 {
         return Err(RegisterItemError::ItemNameEmptyError);
     }
-    // validation of visible_id is exist in Label Table
+
+    //* validation of visible_id is exist in Label Table *//
     let label_model = match Label::find_by_id(register_item_data.visible_id.to_owned())
         .one(&rdb)
         .await?
@@ -35,6 +33,8 @@ pub(super) async fn register(
         Some(label_model) => label_model,
         None => return Err(RegisterItemError::LabelNotFoundError),
     };
+
+    //* validation od visible_id is not exist *//
     // validation of visible_id is not exist in Item Table
     match Item::find()
         .filter(item::Column::VisibleId.eq(register_item_data.visible_id.to_owned()))
@@ -54,7 +54,7 @@ pub(super) async fn register(
         }
         Err(e) => return Err(RegisterItemError::RDBError(e)),
     }
-    // calidation of visible_id is not exist in MeiliSearch
+    // validation of visible_id is not exist in MeiliSearch
     let filter_query = &format!(
         r#"visible_id = "{}""#,
         register_item_data.visible_id.to_owned()
@@ -82,6 +82,8 @@ pub(super) async fn register(
     //drop filter_query and meilisearch_item
     let _ = filter_query;
     let _ = meilisearch_item;
+
+    //* validation of parent_visible_id is exist *//
     // validation of parent_viible_id is exist in Item Table.
     let parent_item_model = match Item::find()
         .filter(item::Column::VisibleId.eq(register_item_data.parent_visible_id.to_owned()))
@@ -91,7 +93,7 @@ pub(super) async fn register(
     {
         Ok(item_models) => {
             if item_models.is_empty() {
-                return Err(RegisterItemError::ParentVisibleIdNotFoundError);
+                return Err(RegisterItemError::ParentVisibleIdNotFoundInItemTableError);
             }
             if item_models.len() > 1 {
                 // If multiple visible_ids already exist
@@ -103,12 +105,54 @@ pub(super) async fn register(
         }
         Err(e) => return Err(RegisterItemError::RDBError(e)),
     };
-    //TODO: 以下を実装
     // validation of parent_viible_id is exist in MeiliSearch.
-    //TODO: 以下を実装
+    let filter_query = &format!(
+        r#"visible_id = "{}""#,
+        parent_item_model.visible_id.to_owned()
+    );
+    let meilisearch_item: Vec<MeilisearchData> = meilisearch
+        .index("item")
+        .search()
+        .with_query(&parent_item_model.visible_id.to_owned())
+        .with_filter(filter_query)
+        .execute()
+        .await?
+        .hits
+        .into_iter()
+        .map(|item| item.result)
+        .collect();
+    if meilisearch_item.len() > 1 {
+        // If multiple visible_ids already exist
+        //* critical incident *//
+        critical_incident::conflict_error().await;
+        return Err(RegisterItemError::VisibleIdConflictInMeiliSerachError);
+    }
+    if meilisearch_item.is_empty() {
+        return Err(RegisterItemError::ParentVisibleIdNotFoundInMeiliSearchError);
+    }
+    //drop filter_query and meilisearch_item
+    let _ = filter_query;
+    let _ = meilisearch_item;
     // validation of parent_viible_id is exist in GraphDB.
+    let mut parent_item_node = graphdb
+        .execute(query("MATCH (item:Item {id: $id}) RETURN item").param("id", parent_item_model.id))
+        .await?;
+    //TODO: delete under loop code
+    //test
+    loop {
+        let item = parent_item_node.next().await?;
+        let row = match item {
+            Some(row) => row,
+            None => break,
+        };
+        let node = row.get::<Node>("item")?;
+        let id = node.get::<i64>("id")?;
+        tracing::debug!("parent node id: {}", id);
+    }
+    //drop parent_item_node
+    let _ = parent_item_node;
 
-    // validation of not conflict color
+    //* validation of not conflict color *//
     if register_item_data.color.chars().count() != 0 {
         // validation of not conflict color in Item Table
         match Item::find()
@@ -154,7 +198,7 @@ pub(super) async fn register(
     }
 
     //* operation *//
-    // insert to RDB
+    //* insert to RDB *//
     let item_model = item::ActiveModel {
         visible_id: Set(register_item_data.visible_id.to_owned()),
         is_waste: Set(false),
@@ -195,7 +239,7 @@ pub(super) async fn register(
         Err(e) => return Err(RegisterItemError::RDBError(e)),
     };
 
-    // insert to meilisearch
+    //* insert to meilisearch *//
     let meilisearch_model: MeilisearchData = MeilisearchData {
         id: registered_item_model.id,
         visible_id: registered_item_model.visible_id.to_owned(),
@@ -231,8 +275,7 @@ pub(super) async fn register(
         }
     }
 
-    // insert to GraphDB
-    // create item node
+    //* insert to GraphDB *//
     match graphdb
         .run(query("MATCH (parent:Item {id: $parent_id}) CREAT (child:Item {id: $child_id})-[relation:ItemTree]->(parent)")
         .param("parent_id", parent_item_model.id)
@@ -254,6 +297,7 @@ pub(super) async fn register(
     Ok(())
 }
 
+// Rollback functions
 async fn rollback_rdb_meilisearch(
     rdb: &DatabaseConnection,
     meilisearch: Client,

@@ -16,8 +16,12 @@ pub enum RegisterItemError {
     VisibleIdExistInMeiliSerachError,
     #[error("VisibleIdConflictInMeiliSerachError: Conflict VisibleId in MeiliSerach.")]
     VisibleIdConflictInMeiliSerachError,
-    #[error("ParentVisibleIdNotFoundError: Parent VisibleId not found.")]
-    ParentVisibleIdNotFoundError,
+    #[error("ParentVisibleIdNotFoundInItemTableError: Parent VisibleId not found in Item Table.")]
+    ParentVisibleIdNotFoundInItemTableError,
+    #[error(
+        "ParentVisibleIdNotFoundInMeiliSearchError: Parent VisibleId not found in MeiliSearch."
+    )]
+    ParentVisibleIdNotFoundInMeiliSearchError,
     #[error("ColorPatternExistInItemTableError: Color already exists in Item Table.")]
     ColorPatternExistInItemTableError,
     #[error("ColorPatternConflictInItemTableError: Conflict Color in Item Table.")]
@@ -30,6 +34,8 @@ pub enum RegisterItemError {
     RegisteredItemNotFoundError,
     #[error(transparent)]
     GraphDBError(#[from] neo4rs::Error),
+    #[error(transparent)]
+    GraphDBParseError(#[from] neo4rs::DeError),
     #[error(transparent)]
     MeiliSearchError(#[from] meilisearch_sdk::errors::Error),
     #[error(transparent)]
@@ -74,10 +80,17 @@ impl From<RegisterItemError> for AppError {
                 message: "VisibleIdConflictInMeiliSerachError: Conflict VisibleId in MeiliSerach."
                     .to_string(),
             },
-            RegisterItemError::ParentVisibleIdNotFoundError => AppError {
+            RegisterItemError::ParentVisibleIdNotFoundInItemTableError => AppError {
                 status_code: StatusCode::BAD_REQUEST,
                 code: "register-item/parent-visible-id-not-found".to_string(),
-                message: "ParentVisibleIdNotFoundError: Parent VisibleId not found.".to_string(),
+                message: "ParentVisibleIdNotFoundInItemTableError: Parent VisibleId not found in Item Table."
+                    .to_string(),
+            },
+            RegisterItemError::ParentVisibleIdNotFoundInMeiliSearchError => AppError {
+                status_code: StatusCode::BAD_REQUEST,
+                code: "register-item/parent-visible-id-not-found".to_string(),
+                message: "ParentVisibleIdNotFoundInMeiliSearchError: Parent VisibleId not found in MeiliSerch."
+                    .to_string(),
             },
             RegisterItemError::ColorPatternExistInItemTableError => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
@@ -112,6 +125,11 @@ impl From<RegisterItemError> for AppError {
             RegisterItemError::GraphDBError(e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/graphdb".to_string(),
+                message: e.to_string(),
+            },
+            RegisterItemError::GraphDBParseError(e) => AppError {
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+                code: "register-item/graphdb-parse".to_string(),
                 message: e.to_string(),
             },
             RegisterItemError::MeiliSearchError(e) => AppError {
