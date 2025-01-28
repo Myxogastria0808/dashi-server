@@ -3,7 +3,7 @@ use domain::{
     entity::data_type::register_item::RegisterItemData,
     repository::{healthcheck::HealthCheckRepository, item::register::RegisterItemRepository},
 };
-use infrastructure::{healthcheck::HealthCheck, item::RegisterItem};
+use infrastructure::{healthcheck::HealthCheck, item::register::RegisterItem};
 
 pub struct RegisterItemUseCaseWrapper {
     pub register_usecase: RegisterItemUseCase<HealthCheck, RegisterItem>,
