@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 
+use crate::use_case_wrapper::item::RegisterItemUseCaseWrapper;
 use axum::{
     extract::{Path, Query, State},
     Json,
 };
 use domain::{
     entity::data_type::{register_item::RegisterItemData, update_item::UpdateItemData},
-    value_object::shared_state::RwLockSharedState,
+    value_object::{error::AppError, shared_state::RwLockSharedState},
 };
 
 pub async fn search_handler(
@@ -40,12 +41,18 @@ pub async fn each_item_handler(
 }
 
 pub async fn connctor_handler(
+    Query(param): Query<HashMap<String, String>>,
     Path(connector_name): Path<String>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
     tracing::info!("reached item/connector handler handler.");
     tracing::info!("path (connector_name): {}", connector_name);
+    tracing::info!("query (keywords): {:?}", param.get("keywords"));
     //validation
+    let keywords = match param.get("keywords") {
+        Some(keywords) => keywords,
+        None => "",
+    };
     let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
@@ -68,14 +75,20 @@ pub async fn cable_handler(
 pub async fn register_handler(
     State(shared_state): State<RwLockSharedState>,
     Json(register_data): Json<RegisterItemData>,
-) -> String {
+) -> Result<(), AppError> {
     tracing::info!("reached item/register handler handler.");
     tracing::info!("body (register_data): {:?}", register_data);
     //validation
     let shared_model = shared_state.write().await;
     //operation
+    let use_case = RegisterItemUseCaseWrapper::new(register_data).await;
+    //healthcheck
+    use_case.healthcheck_usecase().await.healthcheck().await?;
+    //register
+    use_case.register_usecase().await.register().await?;
+    //generate
     drop(shared_model);
-    "register_handler".to_string()
+    Ok(())
 }
 
 pub async fn update_handler(

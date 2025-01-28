@@ -8,6 +8,7 @@ edition.workspace = true
 domain = { path = "../domain" }
 # axum
 axum.workspace = true
+serde.workspace = true
 # .env
 dotenvy = "0.15.7"
 once_cell = "1.19.0"

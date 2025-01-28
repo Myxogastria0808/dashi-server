@@ -3,8 +3,8 @@ use crate::handler::item::{
     search_handler, update_handler,
 };
 use axum::{
-    Router,
     routing::{get, post, put},
+    Router,
 };
 use domain::value_object::shared_state::RwLockSharedState;
 
@@ -12,7 +12,7 @@ pub fn item_route() -> Router<RwLockSharedState> {
     let item_routes = Router::new()
         .route("/search", get(search_handler))
         .route("/:visible_id", get(each_item_handler))
-        .route("/connector/:connector_name", get(connctor_handler))
+        .route("/connector/:connector_name/search", get(connctor_handler))
         .route("/cable", get(cable_handler))
         .route("/register", post(register_handler))
         .route("/update", put(update_handler))

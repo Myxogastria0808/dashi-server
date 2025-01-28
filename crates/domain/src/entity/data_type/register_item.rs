@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct RegisterItemData {
     pub parent_visible_id: String,
     pub visible_id: String,

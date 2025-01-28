@@ -10,6 +10,7 @@ use tower_http::cors::{Any, CorsLayer};
 
 mod handler;
 mod route;
+mod use_case_wrapper;
 
 #[tokio::main]
 async fn main() {

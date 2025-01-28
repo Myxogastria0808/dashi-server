@@ -14,7 +14,7 @@ pub(super) async fn connect_meilisearch() -> Result<Client, ConnectionError> {
     // set Object value
     let _ = MEILI_PORT.set(env::var("MEILI_PORT")?);
     let _ = MEILI_MASTER_KEY.set(env::var("MEILI_MASTER_KEY")?);
-    //インスタンスの作成
+    // create Client instance
     Ok(Client::new(
         format!(
             // "http://meilisearch:{}",

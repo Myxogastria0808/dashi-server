@@ -1,3 +1,5 @@
+use std::fmt::DebugStruct;
+
 use domain::{entity::data_type::meilisearch, repository::connection::ConnectionRepository};
 use entity::{
     item::{self, Entity as Item},
@@ -126,6 +128,51 @@ async fn main() {
         }
         Err(e) => {
             tracing::error!("Failed to insert meilisearch.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    }
+    // set as filterable
+    match meilisearch
+        .index("item")
+        .set_filterable_attributes([
+            "id",
+            "visible_id",
+            "record",
+            "is_waste",
+            "name",
+            "product_number",
+            "description",
+            "purchase_year",
+            "purchase_price",
+            "durability",
+            "is_depreciation",
+            "connector",
+            "is_rent",
+            "color",
+            "created_at",
+            "updated_at",
+        ])
+        .await
+    {
+        Ok(task) => {
+            tracing::info!("Set filterable attributes result.");
+            tracing::info!("{:#?}", task);
+        }
+        Err(e) => {
+            tracing::error!("Failed to set filterable attributes.");
+            tracing::error!("{}", e.to_string());
+            return;
+        }
+    }
+    // get filterable attributes
+    match meilisearch.index("item").get_filterable_attributes().await {
+        Ok(filterable_attributes) => {
+            tracing::info!("Get filterable attributes result.");
+            tracing::info!("{:#?}", filterable_attributes);
+        }
+        Err(e) => {
+            tracing::error!("Failed to get filterable attributes.");
             tracing::error!("{}", e.to_string());
             return;
         }

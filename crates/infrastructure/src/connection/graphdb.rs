@@ -16,7 +16,7 @@ pub(super) async fn connect_neo4j() -> Result<Graph, ConnectionError> {
     let _ = NEO4J_BOLT_PORT.set(env::var("NEO4J_BOLT_PORT")?);
     let _ = NEO4J_USER.set(env::var("NEO4J_USER")?);
     let _ = NEO4J_PASSWORD.set(env::var("NEO4J_PASSWORD")?);
-    //インスタンスの作成
+    // create Graph instance
     Ok(Graph::new(
         format!(
             // "neo4j:{}",

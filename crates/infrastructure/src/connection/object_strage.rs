@@ -20,7 +20,7 @@ pub(super) async fn connect_r2() -> Result<Operator, ConnectionError> {
         .set(env::var("CLOUDFLARE_R2_API_TOKENS_ACCESS_KEY_ID")?);
     let _ = CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY
         .set(env::var("CLOUDFLARE_R2_API_TOKENS_SECRET_ACCESS_KEY")?);
-    //インスタンスの作成
+    // create Operator instance
     Ok(Builder::new()
         .set_bucket_name(
             CLOUDFLARE_R2_BUCKET_NAME

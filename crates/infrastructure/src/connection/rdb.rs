@@ -17,7 +17,7 @@ pub(super) async fn connect_postgres() -> Result<DatabaseConnection, ConnectionE
     let _ = POSTGRES_PASSWORD.set(env::var("POSTGRES_PASSWORD")?);
     let _ = POSTGRES_PORT.set(env::var("POSTGRES_PORT")?);
     let _ = POSTGRES_DB.set(env::var("POSTGRES_DB")?);
-    // connnect database
+    // create DatabaseConnection instance
     Ok(Database::connect(format!(
         // "postgres://{}:{}@postgres:{}/{}",
         "postgres://{}:{}@localhost:{}/{}",
