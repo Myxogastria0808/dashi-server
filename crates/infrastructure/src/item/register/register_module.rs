@@ -87,7 +87,6 @@ pub(super) async fn register(
     // validation of parent_viible_id is exist in Item Table.
     let parent_item_model = match Item::find()
         .filter(item::Column::VisibleId.eq(register_item_data.parent_visible_id.to_owned()))
-        .filter(item::Column::IsWaste.eq(false))
         .all(&rdb)
         .await
     {
@@ -187,7 +186,6 @@ pub(super) async fn register(
     //* insert to RDB *//
     let item_model = item::ActiveModel {
         visible_id: Set(register_item_data.visible_id.to_owned()),
-        is_waste: Set(false),
         name: Set(register_item_data.name.to_owned()),
         product_number: Set(register_item_data.product_number.to_owned()),
         description: Set(register_item_data.description.to_owned()),
