@@ -73,7 +73,6 @@ async fn main() {
     let root_item_connector: Vec<String> = Vec::new();
     let item_model: item::ActiveModel = item::ActiveModel {
         visible_id: Set("0000".to_string()),
-        is_waste: Set(false),
         name: Set("筑波大学".to_string()),
         product_number: Set("".to_string()),
         description: Set("ルートの物品です。".to_string()),

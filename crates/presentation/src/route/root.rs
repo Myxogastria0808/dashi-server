@@ -3,8 +3,8 @@ use crate::route::generate::generate_route;
 use crate::route::item::item_route;
 use crate::route::rental::rent_route;
 use crate::route::utils::util_route;
+use application::shared_state::RwLockSharedState;
 use axum::Router;
-use domain::value_object::shared_state::RwLockSharedState;
 
 pub fn root_route() -> Router<RwLockSharedState> {
     let root_routes = Router::new()

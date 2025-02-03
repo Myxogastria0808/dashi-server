@@ -1,16 +1,13 @@
+use application::shared_state::{RwLockSharedState, SharedState};
 use async_std::sync::{Arc, RwLock};
 use axum::{extract::DefaultBodyLimit, http::Method, routing::get, Router};
-use domain::value_object::{
-    error::api::ApiError,
-    shared_state::{RwLockSharedState, SharedState},
-};
+use domain::value_object::error::api::ApiError;
 use tower_http::cors::{Any, CorsLayer};
 // use utoipa::OpenApi;
 // use utoipa_swagger_ui::SwaggerUi;
 
 mod handler;
 mod route;
-mod use_case_wrapper;
 
 #[tokio::main]
 async fn main() {
