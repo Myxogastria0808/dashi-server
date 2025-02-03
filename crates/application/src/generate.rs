@@ -1,24 +1,33 @@
 use domain::{
-    repository::{generate::GenerateRepository, healthcheck::HealthCheckRepository},
-    value_object::error::{healthcheck::HealthCheckError, AppError},
+    repository::{
+        generate::{GenerateInterface, GenerateRepository},
+        healthcheck::HealthCheckRepository,
+    },
+    value_object::error::AppError,
 };
+use entity::label::Record;
 
-pub struct GenerateUseCase<T: HealthCheckRepository, S: GenerateRepository> {
-    healyhcheck_repository: T,
+pub struct GenerateInputs {
+    pub quantity: u32,
+    pub record: Record,
+}
+
+pub struct GenerateOutputs<T: HealthCheckRepository, S: GenerateRepository> {
+    healthcheck_repository: T,
     generate_repository: S,
 }
 
-impl<T: HealthCheckRepository, S: GenerateRepository> GenerateUseCase<T, S> {
-    pub async fn new(healyhcheck_repository: T, generate_repository: S) -> Self {
+impl<T: HealthCheckRepository, S: GenerateRepository> GenerateOutputs<T, S> {
+    pub async fn new(healthcheck_repository: T, generate_repository: S) -> Self {
         Self {
-            healyhcheck_repository,
+            healthcheck_repository,
             generate_repository,
         }
     }
-    pub async fn healthcheck(&self) -> Result<(), HealthCheckError> {
-        self.healyhcheck_repository.healthcheck().await
-    }
-    pub async fn generate(&self) -> Result<Vec<String>, AppError> {
-        self.generate_repository.generate().await
+    pub async fn run(&self, generate_inputs: GenerateInputs) -> Result<Vec<String>, AppError> {
+        self.healthcheck_repository.healthcheck().await?;
+        let generate_interface =
+            GenerateInterface::new(generate_inputs.quantity, generate_inputs.record).await;
+        self.generate_repository.generate(generate_interface).await
     }
 }

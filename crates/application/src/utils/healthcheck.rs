@@ -3,17 +3,23 @@ use domain::{
     value_object::error::healthcheck::HealthCheckError,
 };
 
-pub struct HealthCheckUseCase<T: HealthCheckRepository> {
-    healyhcheck_repository: T,
+#[derive(Default)]
+pub struct HealthCheckInputs;
+
+pub struct HealthCheckOutputs<T: HealthCheckRepository> {
+    healthcheck_interface: T,
 }
 
-impl<T: HealthCheckRepository> HealthCheckUseCase<T> {
-    pub async fn new(healyhcheck_repository: T) -> Self {
+impl<T: HealthCheckRepository> HealthCheckOutputs<T> {
+    pub async fn new(healthcheck_interface: T) -> Self {
         Self {
-            healyhcheck_repository,
+            healthcheck_interface,
         }
     }
-    pub async fn healthcheck(&self) -> Result<(), HealthCheckError> {
-        self.healyhcheck_repository.healthcheck().await
+    pub async fn run(
+        &self,
+        _healthcheck_interface: HealthCheckInputs,
+    ) -> Result<(), HealthCheckError> {
+        self.healthcheck_interface.healthcheck().await
     }
 }

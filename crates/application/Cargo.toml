@@ -6,3 +6,7 @@ edition.workspace = true
 [dependencies]
 #DDD
 domain = { path = "../domain" }
+# axum
+async-std.workspace = true
+# seaorm
+entity.workspace = true

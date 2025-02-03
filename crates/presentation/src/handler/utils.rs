@@ -1,26 +1,10 @@
-use application::utils::healthcheck::HealthCheckUseCase;
-use axum::{debug_handler, extract::State};
-use domain::{
-    repository::healthcheck::HealthCheckRepository,
-    value_object::{error::AppError, shared_state::RwLockSharedState},
+use application::{
+    shared_state::RwLockSharedState,
+    utils::healthcheck::{HealthCheckInputs, HealthCheckOutputs},
 };
+use axum::{debug_handler, extract::State};
+use domain::{repository::healthcheck::HealthCheckRepository, value_object::error::AppError};
 use infrastructure::healthcheck::HealthCheck;
-
-struct UseCase {
-    healthcheck_usecase: HealthCheckUseCase<HealthCheck>,
-}
-
-impl UseCase {
-    pub async fn new() -> Self {
-        let healthcheck_usecase = HealthCheckUseCase::new(HealthCheck::new().await).await;
-        Self {
-            healthcheck_usecase,
-        }
-    }
-    pub async fn healthcheck_usecase(&self) -> &HealthCheckUseCase<HealthCheck> {
-        &self.healthcheck_usecase
-    }
-}
 
 pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> String {
     tracing::info!("reached utils/login handler.");
@@ -38,13 +22,9 @@ pub async fn healthcheck_handler(
     tracing::info!("reached utils/healthcheck handler.");
     //validation
     let shared_model = shared_state.read().await;
-    //operation
-    UseCase::new()
-        .await
-        .healthcheck_usecase()
-        .await
-        .healthcheck()
-        .await?;
+    let healthcheck_inputs = HealthCheckInputs;
+    let healthcheck_outputs = HealthCheckOutputs::new(HealthCheck::new().await).await;
+    healthcheck_outputs.run(healthcheck_inputs).await?;
     drop(shared_model);
     Ok(())
 }

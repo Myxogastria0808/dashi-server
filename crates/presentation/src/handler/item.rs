@@ -1,14 +1,19 @@
 use std::collections::HashMap;
 
-use crate::use_case_wrapper::item::RegisterItemUseCaseWrapper;
+use application::{
+    item::register::{RegisterItemInputs, RegisterItemOutputs},
+    shared_state::RwLockSharedState,
+};
 use axum::{
     extract::{Path, Query, State},
     Json,
 };
 use domain::{
     entity::data_type::{register_item::RegisterItemData, update_item::UpdateItemData},
-    value_object::{error::AppError, shared_state::RwLockSharedState},
+    repository::{healthcheck::HealthCheckRepository, item::register::RegisterItemRepository},
+    value_object::error::AppError,
 };
+use infrastructure::{healthcheck::HealthCheck, item::register::RegisterItem};
 
 pub async fn search_handler(
     Query(param): Query<HashMap<String, String>>,
@@ -74,19 +79,16 @@ pub async fn cable_handler(
 
 pub async fn register_handler(
     State(shared_state): State<RwLockSharedState>,
-    Json(register_data): Json<RegisterItemData>,
+    Json(register_item_data): Json<RegisterItemData>,
 ) -> Result<(), AppError> {
     tracing::info!("reached item/register handler handler.");
-    tracing::info!("body (register_data): {:?}", register_data);
-    //validation
+    tracing::info!("body (register_data): {:?}", register_item_data);
     let shared_model = shared_state.write().await;
-    //operation
-    let use_case = RegisterItemUseCaseWrapper::new(register_data).await;
-    //healthcheck
-    use_case.healthcheck_usecase().await.healthcheck().await?;
-    //register
-    use_case.register_usecase().await.register().await?;
-    //generate
+    // operation
+    let register_item_inputs = RegisterItemInputs { register_item_data };
+    let register_itme_outputs =
+        RegisterItemOutputs::new(HealthCheck::new().await, RegisterItem::new().await).await;
+    register_itme_outputs.run(register_item_inputs).await?;
     drop(shared_model);
     Ok(())
 }

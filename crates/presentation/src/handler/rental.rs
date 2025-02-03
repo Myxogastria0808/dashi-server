@@ -1,10 +1,9 @@
+use application::shared_state::RwLockSharedState;
 use axum::{
     extract::{Path, State},
     Json,
 };
-use domain::{
-    entity::data_type::rent_item::RentItemData, value_object::shared_state::RwLockSharedState,
-};
+use domain::entity::data_type::rent_item::RentItemData;
 
 pub async fn rent_handler(
     State(shared_state): State<RwLockSharedState>,

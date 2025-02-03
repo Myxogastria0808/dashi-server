@@ -16,7 +16,7 @@ pub struct HealthCheck;
 
 impl HealthCheckRepository for HealthCheck {
     async fn new() -> Self {
-        HealthCheck
+        Self {}
     }
     async fn healthcheck(&self) -> Result<(), HealthCheckError> {
         let connect_collections = connection::CollectConnection::new().await?;

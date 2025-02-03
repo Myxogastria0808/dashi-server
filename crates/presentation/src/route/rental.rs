@@ -1,9 +1,9 @@
 use crate::handler::rental::{render_handler, rent_handler};
+use application::shared_state::RwLockSharedState;
 use axum::{
-    Router,
     routing::{post, put},
+    Router,
 };
-use domain::value_object::shared_state::RwLockSharedState;
 
 pub fn rent_route() -> Router<RwLockSharedState> {
     let rent_routes = Router::new()
