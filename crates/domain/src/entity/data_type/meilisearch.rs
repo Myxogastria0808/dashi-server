@@ -5,7 +5,6 @@ pub struct MeilisearchData {
     pub id: i32,
     pub visible_id: String,
     pub record: entity::label::Record,
-    pub is_waste: bool,
     pub name: String,
     pub product_number: String,
     pub description: String,

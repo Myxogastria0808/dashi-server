@@ -228,7 +228,6 @@ pub(super) async fn register(
         id: registered_item_model.id,
         visible_id: registered_item_model.visible_id.to_owned(),
         record: label_model.record,
-        is_waste: false,
         name: registered_item_model.name.to_owned(),
         product_number: registered_item_model.product_number.to_owned(),
         description: registered_item_model.description.to_owned(),

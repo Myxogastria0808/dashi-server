@@ -1,19 +1,59 @@
 use domain::{entity::data_type::meilisearch, repository::connection::ConnectionRepository};
+use dotenvy::dotenv;
 use entity::{
     item::{self, Entity as Item},
     label::{self, Entity as Label},
 };
 use infrastructure::connection;
 use neo4rs::{query, Node};
+use once_cell::sync::OnceCell;
 use sea_orm::{self, EntityTrait, Set};
+use std::env;
+use tokio::process::Command;
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
-    //tracing
+    // tracing
     let subscriber = tracing_subscriber::FmtSubscriber::builder()
         .with_max_level(tracing::Level::DEBUG)
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
+    // migration
+    // Declaration and initialization of static variable
+    static POSTGRES_USER: OnceCell<String> = OnceCell::new();
+    static POSTGRES_PASSWORD: OnceCell<String> = OnceCell::new();
+    static POSTGRES_PORT: OnceCell<String> = OnceCell::new();
+    static POSTGRES_DB: OnceCell<String> = OnceCell::new();
+    // load .env file
+    dotenv().expect("Failed to load .env file.");
+    // set Object value
+    let _ = POSTGRES_USER.set(env::var("POSTGRES_USER").expect("Failed to get POSTGRES_USER."));
+    let _ = POSTGRES_PASSWORD
+        .set(env::var("POSTGRES_PASSWORD").expect("Failed to get POSTGRES_PASSWORD."));
+    let _ = POSTGRES_PORT.set(env::var("POSTGRES_PORT").expect("Failed to get POSTGRES_PORT."));
+    let _ = POSTGRES_DB.set(env::var("POSTGRES_DB").expect("Failed to get POSTGRES_DB."));
+    // create bash command
+    let bash_command = format!(
+        // "postgres://{}:{}@postgres:{}/{}",
+        r#"DATABASE_URL="postgres://{}:{}@localhost:{}/{}" sea-orm-cli migrate refresh"#,
+        POSTGRES_USER.get().expect("Failed to get POSTGRES_USER."),
+        POSTGRES_PASSWORD
+            .get()
+            .expect("Failed to get POSTGRES_PASSWORD."),
+        POSTGRES_PORT.get().expect("Failed to get POSTGRES_PORT."),
+        POSTGRES_DB.get().expect("Failed to get POSTGRES_DB."),
+    );
+    let output = Command::new("bash")
+        .arg("-c")
+        .arg(bash_command)
+        .output()
+        .await
+        .expect("Failed to migration command.");
+    tracing::info!("Migration result.");
+    tracing::info!(
+        "{}",
+        std::str::from_utf8(&output.stdout).expect("Failed to convert &str.")
+    );
     // Connect rdb
     let rdb = match connection::CollectConnection::connect_rdb().await {
         Ok(rdb) => rdb,
@@ -100,10 +140,9 @@ async fn main() {
         id: 1,
         visible_id: "0000".to_string(),
         record: label::Record::Nothing,
-        is_waste: false,
         name: "筑波大学".to_string(),
         product_number: "".to_string(),
-        description: "ルートの物品です。".to_string(),
+        description: "根の物品です。".to_string(),
         purchase_year: None,
         purchase_price: None,
         durability: None,
@@ -136,7 +175,6 @@ async fn main() {
             "id",
             "visible_id",
             "record",
-            "is_waste",
             "name",
             "product_number",
             "description",

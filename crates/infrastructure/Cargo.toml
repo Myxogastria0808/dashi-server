@@ -7,8 +7,8 @@ edition.workspace = true
 # DDD
 domain = { path = "../domain" }
 # .env
-dotenvy = "0.15.7"
-once_cell = "1.19.0"
+dotenvy.workspace = true
+once_cell.workspace = true
 # seaorm
 entity.workspace = true
 sea-orm.workspace = true

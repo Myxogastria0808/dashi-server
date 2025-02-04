@@ -11,6 +11,7 @@
 
 #* create migration, run init and presentation *#
 [workspace]
+resolver = "2"
 members = [
     "crates/init",
     "crates/presentation",
