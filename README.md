@@ -91,7 +91,6 @@ erDiagram
     Item {
         i32 Id PK "1"
         String VisibleId FK "0000"
-        boolean IsWaste "false"
         String Name "筑波大學"
         String ProductNumber ""
         String Description "ルートの物品です"
@@ -120,7 +119,6 @@ erDiagram
         i32 Id PK "1"
         String VisibleId FK "0000"
         String Record "Record::Nothing"
-        boolean IsWaste "false"
         String Name "筑波大學"
         String ProductNumber ""
         String Description "ルートの物品です"
