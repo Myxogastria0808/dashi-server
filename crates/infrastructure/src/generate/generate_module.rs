@@ -58,10 +58,14 @@ pub(super) async fn generate(
     let mut new_label_models: Vec<label::ActiveModel> = Vec::new();
     let mut new_label_visible_id: Vec<String> = Vec::new();
     for i in 1..=quantity {
-        let visible_id = radix_36(visible_id_10bit + i).to_string().to_uppercase();
+        let visible_id = format!(
+            "{:0>4}",
+            radix_36(visible_id_10bit + i).to_string().to_uppercase()
+        );
+
         new_label_visible_id.push(visible_id.to_owned());
         if i == quantity {
-            // IsMax: true (last)s
+            // IsMax: true (last)
             let insert_label_model = label::ActiveModel {
                 visible_id: Set(visible_id.to_owned()),
                 is_max: Set(true),

@@ -19,6 +19,6 @@ pub struct GenerateInterface {
 
 impl GenerateInterface {
     pub async fn new(quantity: u32, record: Record) -> Self {
-        GenerateInterface { quantity, record }
+        Self { quantity, record }
     }
 }

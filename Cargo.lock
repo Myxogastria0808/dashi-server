@@ -122,7 +122,7 @@ checksum = "34ac096ce696dc2fcabef30516bb13c0a68a11d30131d3df6f04711467681b04"
 
 [[package]]
 name = "application"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "async-std",
  "domain",
@@ -488,9 +488,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-runtime"
-version = "1.7.7"
+version = "1.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "865f7050bbc7107a6c98a397a9fcd9413690c27fa718446967cf03b2d3ac517e"
+checksum = "d526a12d9ed61fadefda24abe2e682892ba288c2018bcb38b1b4c111d13f6d92"
 dependencies = [
  "aws-smithy-async",
  "aws-smithy-http",
@@ -532,9 +532,9 @@ dependencies = [
 
 [[package]]
 name = "aws-smithy-types"
-version = "1.2.12"
+version = "1.2.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a28f6feb647fb5e0d5b50f0472c19a7db9462b74e2fec01bb0b44eedcc834e97"
+checksum = "c7b8a53819e42f10d0821f56da995e1470b199686a1809168db6ca485665f042"
 dependencies = [
  "base64-simd",
  "bytes",
@@ -1199,7 +1199,7 @@ dependencies = [
 
 [[package]]
 name = "domain"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "async-std",
  "axum",
@@ -1265,7 +1265,7 @@ dependencies = [
 
 [[package]]
 name = "entity"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "sea-orm",
  "serde",
@@ -2034,7 +2034,7 @@ dependencies = [
 
 [[package]]
 name = "infrastructure"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "cf-r2-sdk",
  "chrono",
@@ -2064,7 +2064,7 @@ dependencies = [
 
 [[package]]
 name = "init"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "chrono",
  "domain",
@@ -2787,7 +2787,7 @@ dependencies = [
 
 [[package]]
 name = "presentation"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "application",
  "async-std",

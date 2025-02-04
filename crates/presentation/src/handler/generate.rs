@@ -11,7 +11,7 @@ pub async fn qr_handler(
     Path(quantity): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
 ) -> Result<Json<Vec<String>>, AppError> {
-    tracing::info!("reached generate/qr handler handler.");
+    tracing::info!("reached generate/qr handler.");
     tracing::info!("path (quantity): {}", quantity);
     let shared_model = shared_state.write().await;
     // operation
@@ -33,7 +33,7 @@ pub async fn barcode_handler(
     Path(quantity): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
 ) -> Result<Json<Vec<String>>, AppError> {
-    tracing::info!("reached generate/barcode handler handler.");
+    tracing::info!("reached generate/barcode handler.");
     tracing::info!("path (quantity): {}", quantity);
     let shared_model = shared_state.write().await;
     // operation
@@ -55,7 +55,7 @@ pub async fn nothing_handler(
     Path(quantity): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
 ) -> Result<Json<Vec<String>>, AppError> {
-    tracing::info!("reached generate/nothing handler handler.");
+    tracing::info!("reached generate/nothing handler.");
     tracing::info!("path (quantity): {}", quantity);
     let shared_model = shared_state.write().await;
     // operation

@@ -46,10 +46,10 @@ impl From<GenerateError> for AppError {
                 code: "generate/parse-int".to_string(),
                 message: e.to_string(),
             },
-            GenerateError::RDBError(e) => AppError {
+            GenerateError::RDBError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "generate/rdb".to_string(),
-                message: e.to_string(),
+                message: "RDBError: RDB trouble is occurred.".to_string(),
             },
         }
     }

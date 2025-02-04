@@ -36,20 +36,20 @@ impl From<ConnectionError> for AppError {
                 code: "connection/dotenv-var-not-found".to_string(),
                 message: format!("Failed to get {}", e),
             },
-            ConnectionError::GraphDBError(e) => AppError {
+            ConnectionError::GraphDBError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "connection/graphdb".to_string(),
-                message: e.to_string(),
+                message: "GraphDBError: GraphDB trouble is occurred.".to_string(),
             },
-            ConnectionError::MeiliSearchError(e) => AppError {
+            ConnectionError::MeiliSearchError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "connection/meilisearch".to_string(),
-                message: e.to_string(),
+                message: "MeiliSearchError: MeiliSearchDB trouble is occurred.".to_string(),
             },
-            ConnectionError::RDBError(e) => AppError {
+            ConnectionError::RDBError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "connection/rdb".to_string(),
-                message: e.to_string(),
+                message: "RDBError: RDB trouble is occurred.".to_string(),
             },
         }
     }

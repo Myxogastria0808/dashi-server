@@ -1,10 +1,9 @@
+use crate::RwLockSharedState;
 use axum::{
     extract::{Path, State},
     Json,
 };
 use domain::entity::data_type::rent_item::RentItemData;
-
-use crate::RwLockSharedState;
 
 pub async fn rent_handler(
     State(shared_state): State<RwLockSharedState>,

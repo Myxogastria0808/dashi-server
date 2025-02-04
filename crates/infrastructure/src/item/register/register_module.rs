@@ -34,7 +34,7 @@ pub(super) async fn register(
         None => return Err(RegisterItemError::LabelNotFoundError),
     };
 
-    //* validation od visible_id is not exist *//
+    //* validation of visible_id is not exist *//
     // validation of visible_id is not exist in Item Table
     match Item::find()
         .filter(item::Column::VisibleId.eq(register_item_data.visible_id.to_owned()))
@@ -261,14 +261,17 @@ pub(super) async fn register(
 
     //* insert to GraphDB *//
     match graphdb
-        .run(query("MATCH (parent:Item {id: $parent_id}) CREATE (child:Item {id: $child_id})-[relation:ItemTree]->(parent)")
-        .param("parent_id", parent_item_model.id)
-        .param("child_id", registered_item_model.id))
+        .run(
+            query(
+                "MATCH (parent:Item {id: $parent_id}) CREATE (child:Item {id: $child_id})-[relation:ItemTree]->(parent)"
+            )
+            .param("parent_id", parent_item_model.id)
+            .param("child_id", registered_item_model.id)
+        )
         .await
     {
-        Ok(result) => {
+        Ok(_) => {
             tracing::info!("Inserted to GraphDB");
-            tracing::debug!("{:#?}", result);
         }
         Err(e) => {
             tracing::error!("Failed to insert item.");

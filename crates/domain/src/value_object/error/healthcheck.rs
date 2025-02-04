@@ -17,25 +17,25 @@ pub enum HealthCheckError {
 impl From<HealthCheckError> for AppError {
     fn from(error: HealthCheckError) -> Self {
         match error {
-            HealthCheckError::GraphDBError(e) => AppError {
-                status_code: StatusCode::INTERNAL_SERVER_ERROR,
-                code: "healthcheck/graphdb".to_string(),
-                message: e.to_string(),
-            },
-            HealthCheckError::MeiliSearchError(e) => AppError {
-                status_code: StatusCode::INTERNAL_SERVER_ERROR,
-                code: "healthcheck/meilisearch".to_string(),
-                message: e.to_string(),
-            },
-            HealthCheckError::RDBError(e) => AppError {
-                status_code: StatusCode::INTERNAL_SERVER_ERROR,
-                code: "healthcheck/rdb".to_string(),
-                message: e.to_string(),
-            },
             HealthCheckError::ConnectionError(e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "healthcheck/connection".to_string(),
                 message: e.to_string(),
+            },
+            HealthCheckError::GraphDBError(_e) => AppError {
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+                code: "healthcheck/graphdb".to_string(),
+                message: "GraphDBError: GraphDB trouble is occurred.".to_string(),
+            },
+            HealthCheckError::MeiliSearchError(_e) => AppError {
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+                code: "healthcheck/meilisearch".to_string(),
+                message: "MeiliSearchError: MeiliSearchDB trouble is occurred.".to_string(),
+            },
+            HealthCheckError::RDBError(_e) => AppError {
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+                code: "healthcheck/rdb".to_string(),
+                message: "RDBError: RDB trouble is occurred.".to_string(),
             },
         }
     }

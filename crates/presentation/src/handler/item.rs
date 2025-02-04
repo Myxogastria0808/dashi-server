@@ -1,4 +1,8 @@
-use application::usecase::item::register::{RegisterItemInputs, RegisterItemOutputs};
+use crate::RwLockSharedState;
+use application::usecase::item::{
+    delete::{DeleteItemInputs, DeleteItemOutputs},
+    register::{RegisterItemInputs, RegisterItemOutputs},
+};
 use axum::{
     extract::{Path, Query, State},
     Json,
@@ -9,15 +13,12 @@ use domain::{
 };
 use std::collections::HashMap;
 
-use crate::RwLockSharedState;
-
 pub async fn search_handler(
     Query(param): Query<HashMap<String, String>>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
-    tracing::info!("reached item/search handler handler.");
+    tracing::info!("reached item/search handler.");
     tracing::info!("query (keywords): {:?}", param.get("keywords"));
-    //validation
     let keywords = match param.get("keywords") {
         Some(keywords) => keywords,
         None => "",
@@ -32,9 +33,8 @@ pub async fn each_item_handler(
     Path(visible_id): Path<String>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
-    tracing::info!("reached item/each_item handler handler.");
+    tracing::info!("reached item/each_item handler.");
     tracing::info!("path (visible_id): {}", visible_id);
-    //validation
     let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
@@ -46,10 +46,9 @@ pub async fn connctor_handler(
     Path(connector_name): Path<String>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
-    tracing::info!("reached item/connector handler handler.");
+    tracing::info!("reached item/connector handler.");
     tracing::info!("path (connector_name): {}", connector_name);
     tracing::info!("query (keywords): {:?}", param.get("keywords"));
-    //validation
     let keywords = match param.get("keywords") {
         Some(keywords) => keywords,
         None => "",
@@ -64,20 +63,31 @@ pub async fn cable_handler(
     Path(cable_color_pattern): Path<String>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
-    tracing::info!("reached item/cable handler handler.");
+    tracing::info!("reached item/cable handler.");
     tracing::info!("path (cable_color_pattern): {}", cable_color_pattern);
-    //validation
     let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
     "cable_handler".to_string()
 }
 
+pub async fn delete_history_handler(
+    Path(limit): Path<u32>,
+    State(shared_state): State<RwLockSharedState>,
+) -> String {
+    tracing::info!("reached item/delete-history handler.");
+    tracing::info!("path (limit): {}", limit);
+    let shared_model = shared_state.read().await;
+    //operation
+    drop(shared_model);
+    "delete_history_handler".to_string()
+}
+
 pub async fn register_handler(
     State(shared_state): State<RwLockSharedState>,
     Json(register_item_data): Json<RegisterItemData>,
 ) -> Result<(), AppError> {
-    tracing::info!("reached item/register handler handler.");
+    tracing::info!("reached item/register handler.");
     tracing::info!("body (register_data): {:?}", register_item_data);
     let shared_model = shared_state.write().await;
     // operation
@@ -96,9 +106,8 @@ pub async fn update_handler(
     State(shared_state): State<RwLockSharedState>,
     Json(update_data): Json<UpdateItemData>,
 ) -> String {
-    tracing::info!("reached item/update handler handler.");
+    tracing::info!("reached item/update handler.");
     tracing::info!("body (update_data): {:?}", update_data);
-    //validation
     let shared_model = shared_state.write().await;
     //operation
     drop(shared_model);
@@ -108,12 +117,18 @@ pub async fn update_handler(
 pub async fn delete_handler(
     Path(visible_id): Path<String>,
     State(shared_state): State<RwLockSharedState>,
-) -> String {
-    tracing::info!("reached item/delete handler handler.");
+) -> Result<(), AppError> {
+    tracing::info!("reached item/delete handler.");
     tracing::info!("path (visible_id): {}", visible_id);
-    //validation
     let shared_model = shared_state.write().await;
     //operation
+    let inputs = DeleteItemInputs { visible_id };
+    let outputs = DeleteItemOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().delete_item,
+    )
+    .await;
+    outputs.run(inputs).await?;
     drop(shared_model);
-    "delete_handler".to_string()
+    Ok(())
 }

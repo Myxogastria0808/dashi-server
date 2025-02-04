@@ -5,7 +5,6 @@ use domain::value_object::error::AppError;
 
 pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> String {
     tracing::info!("reached utils/login handler.");
-    //validation
     let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);

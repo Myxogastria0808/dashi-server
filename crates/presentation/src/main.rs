@@ -5,7 +5,7 @@ use tower_http::cors::{Any, CorsLayer};
 // use utoipa::OpenApi;
 // use utoipa_swagger_ui::SwaggerUi;
 
-// レイヤードアーキテクチャに違反しているが、Rustの性質上不可能なのでinfrastructure層から直接呼び出す
+// レイヤードアーキテクチャに違反しているが、Rustの性質上不可能なのでinfrastructure層及びdomain層から直接呼び出す
 use domain::{factory::shared_state::SharedStateFactory, value_object::error::api::ApiError};
 use infrastructure::shared_state::SharedState;
 

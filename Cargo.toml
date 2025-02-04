@@ -1,7 +1,7 @@
-# #* create entity *#
+# #* create entity and migration *#
 # [package]
 # name = "dashi-server"
-# version = "0.1.0"
+# version = "0.0.1"
 # edition = "2021"
 
 # [dependencies]
@@ -9,7 +9,7 @@
 # migration = { path = "migration" }
 # sea-orm = { version = "1.0.0", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros" ] }
 
-#* main and migration *#
+#* run init and presentation *#
 [workspace]
 members = [
     "crates/init",
@@ -21,7 +21,7 @@ members = [
 
 [workspace.package]
 name = "dashi-server"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
 
 [workspace.dependencies]
