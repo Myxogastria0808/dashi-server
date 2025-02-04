@@ -3,7 +3,7 @@ use crate::route::generate::generate_route;
 use crate::route::item::item_route;
 use crate::route::rental::rent_route;
 use crate::route::utils::util_route;
-use application::shared_state::RwLockSharedState;
+use crate::RwLockSharedState;
 use axum::Router;
 
 pub fn root_route() -> Router<RwLockSharedState> {

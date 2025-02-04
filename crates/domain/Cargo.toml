@@ -4,17 +4,17 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-# DDD
-entity.workspace = true
-chrono.workspace = true
-serde.workspace = true
 # .env
 dotenvy.workspace = true
 # axum
 async-std.workspace = true
 axum.workspace = true
-# sea-orm
+# seaorm
 sea-orm.workspace = true
+entity.workspace = true
+chrono.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 # meilisearch
 meilisearch-sdk.workspace = true
 # neo4j
@@ -25,5 +25,3 @@ cf-r2-sdk.workspace = true
 thiserror.workspace = true
 # logging
 tracing.workspace = true
-# other
-serde_json.workspace = true

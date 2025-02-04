@@ -1,19 +1,15 @@
-use std::collections::HashMap;
-
-use application::{
-    item::register::{RegisterItemInputs, RegisterItemOutputs},
-    shared_state::RwLockSharedState,
-};
+use application::usecase::item::register::{RegisterItemInputs, RegisterItemOutputs};
 use axum::{
     extract::{Path, Query, State},
     Json,
 };
 use domain::{
     entity::data_type::{register_item::RegisterItemData, update_item::UpdateItemData},
-    repository::{healthcheck::HealthCheckRepository, item::register::RegisterItemRepository},
     value_object::error::AppError,
 };
-use infrastructure::{healthcheck::HealthCheck, item::register::RegisterItem};
+use std::collections::HashMap;
+
+use crate::RwLockSharedState;
 
 pub async fn search_handler(
     Query(param): Query<HashMap<String, String>>,
@@ -85,10 +81,13 @@ pub async fn register_handler(
     tracing::info!("body (register_data): {:?}", register_item_data);
     let shared_model = shared_state.write().await;
     // operation
-    let register_item_inputs = RegisterItemInputs { register_item_data };
-    let register_itme_outputs =
-        RegisterItemOutputs::new(HealthCheck::new().await, RegisterItem::new().await).await;
-    register_itme_outputs.run(register_item_inputs).await?;
+    let inputs = RegisterItemInputs { register_item_data };
+    let outputs = RegisterItemOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().register_item,
+    )
+    .await;
+    outputs.run(inputs).await?;
     drop(shared_model);
     Ok(())
 }

@@ -1,5 +1,7 @@
-use crate::handler::rental::{render_handler, rent_handler};
-use application::shared_state::RwLockSharedState;
+use crate::{
+    handler::rental::{render_handler, rent_handler},
+    RwLockSharedState,
+};
 use axum::{
     routing::{post, put},
     Router,

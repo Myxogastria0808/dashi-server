@@ -1,10 +1,13 @@
-use application::shared_state::{RwLockSharedState, SharedState};
+use application::model::shared_state::SharedStateUseCase;
 use async_std::sync::{Arc, RwLock};
 use axum::{extract::DefaultBodyLimit, http::Method, routing::get, Router};
-use domain::value_object::error::api::ApiError;
 use tower_http::cors::{Any, CorsLayer};
 // use utoipa::OpenApi;
 // use utoipa_swagger_ui::SwaggerUi;
+
+// レイヤードアーキテクチャに違反しているが、Rustの性質上不可能なのでinfrastructure層から直接呼び出す
+use domain::{factory::shared_state::SharedStateFactory, value_object::error::api::ApiError};
+use infrastructure::shared_state::SharedState;
 
 mod handler;
 mod route;
@@ -14,6 +17,9 @@ async fn main() {
     let _ = api().await;
 }
 
+//RwLockSharedState
+pub type RwLockSharedState = Arc<RwLock<SharedState>>;
+
 //axum
 async fn api() -> Result<(), ApiError> {
     // tracing
@@ -22,7 +28,11 @@ async fn api() -> Result<(), ApiError> {
         .finish();
     tracing::subscriber::set_global_default(subscriber)?;
     // Shared Object
-    let shared_state: RwLockSharedState = Arc::new(RwLock::new(SharedState {}));
+    let shared_state = Arc::new(RwLock::new(
+        SharedStateUseCase::new(SharedState::new().await)
+            .await
+            .shared_state_factory,
+    ));
     // CORS
     let cors: CorsLayer = CorsLayer::new()
         .allow_methods([Method::POST, Method::GET, Method::DELETE, Method::PUT])

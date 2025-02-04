@@ -5,21 +5,18 @@ edition.workspace = true
 
 [dependencies]
 # DDD
-domain = { path = "../domain" }
 application = { path = "../application" }
+domain = { path = "../domain" }
 infrastructure = { path = "../infrastructure" }
 # axum
 async-std.workspace = true
 axum.workspace = true
 tower-http.workspace = true
 tokio.workspace = true
-# sea-orm
-sea-orm.workspace = true
+utoipa.workspace = true
+utoipa-swagger-ui.workspace = true
+# seaorm
 entity.workspace = true
-# meilisearch
-meilisearch-sdk.workspace = true
-# neo4j
-neo4rs.workspace = true
 # logging
 tracing.workspace = true
 tracing-subscriber.workspace = true

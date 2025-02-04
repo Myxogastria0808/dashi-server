@@ -1,4 +1,4 @@
-use application::shared_state::RwLockSharedState;
+use crate::RwLockSharedState;
 use axum::extract::State;
 
 pub async fn depreiation_handler(State(shared_state): State<RwLockSharedState>) -> String {

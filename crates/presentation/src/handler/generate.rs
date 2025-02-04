@@ -1,17 +1,11 @@
-use application::{
-    generate::{GenerateInputs, GenerateOutputs},
-    shared_state::RwLockSharedState,
-};
+use crate::RwLockSharedState;
+use application::usecase::generate::{GenerateInputs, GenerateOutputs};
 use axum::{
     extract::{Path, State},
     Json,
 };
-use domain::{
-    repository::{generate::GenerateRepository, healthcheck::HealthCheckRepository},
-    value_object::error::AppError,
-};
+use domain::value_object::error::AppError;
 use entity::label::Record;
-use infrastructure::{generate::Generate, healthcheck::HealthCheck};
 
 pub async fn qr_handler(
     Path(quantity): Path<u32>,
@@ -25,8 +19,11 @@ pub async fn qr_handler(
         quantity,
         record: Record::Qr,
     };
-    let generate_outputs =
-        GenerateOutputs::new(HealthCheck::new().await, Generate::new().await).await;
+    let generate_outputs = GenerateOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().generate,
+    )
+    .await;
     let result = generate_outputs.run(generate_inputs).await?;
     drop(shared_model);
     Ok(Json(result))
@@ -44,8 +41,11 @@ pub async fn barcode_handler(
         quantity,
         record: Record::Barcode,
     };
-    let generate_outputs =
-        GenerateOutputs::new(HealthCheck::new().await, Generate::new().await).await;
+    let generate_outputs = GenerateOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().generate,
+    )
+    .await;
     let result = generate_outputs.run(generate_inputs).await?;
     drop(shared_model);
     Ok(Json(result))
@@ -63,8 +63,11 @@ pub async fn nothing_handler(
         quantity,
         record: Record::Nothing,
     };
-    let generate_outputs =
-        GenerateOutputs::new(HealthCheck::new().await, Generate::new().await).await;
+    let generate_outputs = GenerateOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().generate,
+    )
+    .await;
     let result = generate_outputs.run(generate_inputs).await?;
     drop(shared_model);
     Ok(Json(result))
