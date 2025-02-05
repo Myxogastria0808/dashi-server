@@ -5,3 +5,4 @@
 /migration/target
 /entity/target
 .env
+/.direnv
