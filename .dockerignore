@@ -5,6 +5,7 @@ target
 migration/target
 .env
 .env.example
+.envrc
 .gitignore
 .dockerignore
 init.Dockerfile
