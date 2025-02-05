@@ -19,8 +19,8 @@ pub(super) async fn connect_neo4j() -> Result<Graph, ConnectionError> {
     // create Graph instance
     Ok(Graph::new(
         format!(
-            // "neo4j:{}",
-            "localhost:{}",
+            "neo4j:{}",
+            // "localhost:{}",
             NEO4J_BOLT_PORT
                 .get()
                 .ok_or(ConnectionError::DotEnvVarNotFountError(

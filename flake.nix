@@ -31,6 +31,7 @@
               pkg-config
               rust-bin.stable.latest.default
               sea-orm-cli
+              cargo-watch
             ];
             RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
           };

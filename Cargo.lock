@@ -2185,11 +2185,9 @@ version = "0.0.1"
 dependencies = [
  "chrono",
  "domain",
- "dotenvy",
  "entity",
  "infrastructure",
  "neo4rs",
- "once_cell",
  "sea-orm 1.1.4",
  "serde_json",
  "tokio",

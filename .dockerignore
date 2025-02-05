@@ -1,0 +1,12 @@
+postgres
+neo4j
+meilisearch
+target
+migration/target
+.env
+.env.example
+.gitignore
+.dockerignore
+Dockerfile
+dev.compose.yaml
+server.sh

@@ -19,8 +19,8 @@ pub(super) async fn connect_postgres() -> Result<DatabaseConnection, ConnectionE
     let _ = POSTGRES_DB.set(env::var("POSTGRES_DB")?);
     // create DatabaseConnection instance
     Ok(Database::connect(format!(
-        // "postgres://{}:{}@postgres:{}/{}",
-        "postgres://{}:{}@localhost:{}/{}",
+        "postgres://{}:{}@postgres:{}/{}",
+        // "postgres://{}:{}@localhost:{}/{}",
         POSTGRES_USER
             .get()
             .ok_or(ConnectionError::DotEnvVarNotFountError(

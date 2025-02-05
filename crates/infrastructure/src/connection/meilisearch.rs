@@ -17,8 +17,8 @@ pub(super) async fn connect_meilisearch() -> Result<Client, ConnectionError> {
     // create Client instance
     Ok(Client::new(
         format!(
-            // "http://meilisearch:{}",
-            "http://localhost:{}",
+            "http://meilisearch:{}",
+            // "http://localhost:{}",
             MEILI_PORT
                 .get()
                 .ok_or(ConnectionError::DotEnvVarNotFountError(

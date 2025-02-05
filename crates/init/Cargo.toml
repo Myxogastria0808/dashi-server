@@ -7,9 +7,6 @@ edition.workspace = true
 # DDD
 infrastructure = { path = "../infrastructure" }
 domain = { path = "../domain" }
-# .env
-dotenvy.workspace = true
-once_cell.workspace = true
 # seaorm
 tokio.workspace = true
 entity.workspace = true
