@@ -7,6 +7,7 @@ migration/target
 .env.example
 .gitignore
 .dockerignore
-Dockerfile
+init.Dockerfile
+server.Dockerfile
 dev.compose.yaml
-server.sh
+prod.compose.yaml

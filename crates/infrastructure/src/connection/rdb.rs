@@ -10,6 +10,7 @@ pub(super) async fn connect_postgres() -> Result<DatabaseConnection, ConnectionE
     static POSTGRES_PASSWORD: OnceCell<String> = OnceCell::new();
     static POSTGRES_PORT: OnceCell<String> = OnceCell::new();
     static POSTGRES_DB: OnceCell<String> = OnceCell::new();
+    static POSTGRES_HOST: OnceCell<String> = OnceCell::new();
     // load .env file
     dotenv()?;
     // set Object value
@@ -17,10 +18,10 @@ pub(super) async fn connect_postgres() -> Result<DatabaseConnection, ConnectionE
     let _ = POSTGRES_PASSWORD.set(env::var("POSTGRES_PASSWORD")?);
     let _ = POSTGRES_PORT.set(env::var("POSTGRES_PORT")?);
     let _ = POSTGRES_DB.set(env::var("POSTGRES_DB")?);
+    let _ = POSTGRES_HOST.set(env::var("POSTGRES_HOST")?);
     // create DatabaseConnection instance
     Ok(Database::connect(format!(
-        "postgres://{}:{}@postgres:{}/{}",
-        // "postgres://{}:{}@localhost:{}/{}",
+        "postgres://{}:{}@{}:{}/{}",
         POSTGRES_USER
             .get()
             .ok_or(ConnectionError::DotEnvVarNotFountError(
@@ -30,6 +31,11 @@ pub(super) async fn connect_postgres() -> Result<DatabaseConnection, ConnectionE
             .get()
             .ok_or(ConnectionError::DotEnvVarNotFountError(
                 "POSTGRES_PASSWORD".to_string(),
+            ))?,
+        POSTGRES_HOST
+            .get()
+            .ok_or(ConnectionError::DotEnvVarNotFountError(
+                "POSTGRES_HOST".to_string(),
             ))?,
         POSTGRES_PORT
             .get()

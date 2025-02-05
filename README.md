@@ -57,30 +57,33 @@ flowchart TD
 - migration
 - entity
 
-# server の起動
+# 開発環境
+
+## 開発環境の構築
+
+```sh
+docker-compose -f dev.compose.yaml up -d
+```
+
+## server の起動
 
 ```sh
 cargo run --bin presentation
 ```
 
-# migration の実行
+## 開発環境の削除
 
 ```sh
-DATABASE_URL="postgres://<username>:<password>@<ip_address>:<port>/<database_name>" sea-orm-cli migrate refresh
+docker-compose -f dev.compose.yaml down --rmi all --volumes
+sudo rm -rf postgres neo4j meilisearch
 ```
 
-# entity の生成
+# 製品版の環境
+
+## 製品版の環境の構築
 
 ```sh
-sea-orm-cli generate entity \
-    -u <DATABASE_URL> \
-    -o entity/src
-```
-
-# initilizer の実行
-
-```sh
-cargo run --bin init
+docker-compose -f prod.compose.yaml up -d
 ```
 
 # 初期データ
