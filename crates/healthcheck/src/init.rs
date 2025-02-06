@@ -1,19 +1,14 @@
+use domain::repository::healthcheck::HealthCheckRepository;
 use domain::{entity::data_type::meilisearch, repository::connection::ConnectionRepository};
 use entity::{
     item::{self, Entity as Item},
     label::{self, Entity as Label},
 };
-use infrastructure::connection;
+use infrastructure::{connection, healthcheck};
 use neo4rs::{query, Node};
 use sea_orm::{self, EntityTrait, Set};
 
-#[tokio::main(flavor = "current_thread")]
-async fn main() {
-    // tracing
-    let subscriber = tracing_subscriber::FmtSubscriber::builder()
-        .with_max_level(tracing::Level::DEBUG)
-        .finish();
-    tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber");
+pub(super) async fn initializer() {
     // Connect rdb
     let rdb = match connection::CollectConnection::connect_rdb().await {
         Ok(rdb) => rdb,
@@ -234,7 +229,11 @@ async fn main() {
 
     // Add r2 data //
     match r2
-        .upload_file("1.webp", "image/webp", "./crates/init/image/tsukuba.webp")
+        .upload_file(
+            "1.webp",
+            "image/webp",
+            "./crates/healthcheck/image/tsukuba.webp",
+        )
         .await
     {
         Ok(_) => {
@@ -251,5 +250,5 @@ async fn main() {
     let _ = rdb.close().await;
 
     // Finish!
-    tracing::info!("Finish!");
+    tracing::info!("Initialize was finished!");
 }

@@ -14,13 +14,13 @@
 resolver = "2"
 members = [
     "crates/healthcheck",
-    "crates/init",
+    "crates/ping",
     "crates/presentation",
     "crates/application",
     "crates/domain",
     "crates/infrastructure",
     "migration",
-    "entity", "crates/healthcheck",
+    "entity", "crates/healthcheck", "crates/ping",
 ]
 
 [workspace.package]

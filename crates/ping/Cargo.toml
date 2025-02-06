@@ -1,5 +1,5 @@
 [package]
-name = "init"
+name = "ping"
 version.workspace = true
 edition.workspace = true
 
@@ -7,12 +7,8 @@ edition.workspace = true
 # DDD
 infrastructure = { path = "../infrastructure" }
 domain = { path = "../domain" }
-# seaorm
+# async
 tokio.workspace = true
-entity.workspace = true
-sea-orm.workspace = true
-serde_json.workspace = true
-chrono.workspace = true
 # neo4j
 neo4rs.workspace = true
 # logging

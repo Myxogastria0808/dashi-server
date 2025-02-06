@@ -44,7 +44,6 @@ pub(super) async fn healthcheck_meilisearch(meilisearch: Client) -> Result<(), H
         updated_at: root_item[0].updated_at,
     };
 
-    println!("meilisearch flag");
     for item in root_item {
         if item != correct_root_item {
             return Err(HealthCheckError::IncompatibleInMeiliSearchError);

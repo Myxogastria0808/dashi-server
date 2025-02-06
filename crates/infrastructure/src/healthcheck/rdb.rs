@@ -23,7 +23,6 @@ pub(super) async fn healthcheck_rdb(rdb: DatabaseConnection) -> Result<(), Healt
         record: Record::Nothing,
     };
 
-    println!("rdb flag (label)");
     if root_label != correct_root_label {
         return Err(HealthCheckError::IncompatibleInLabelTableError);
     }
@@ -53,7 +52,6 @@ pub(super) async fn healthcheck_rdb(rdb: DatabaseConnection) -> Result<(), Healt
         updated_at: root_item.updated_at,
     };
 
-    println!("rdb flag (item)");
     if root_item != correct_root_item {
         return Err(HealthCheckError::IncompatibleInItemTableError);
     }

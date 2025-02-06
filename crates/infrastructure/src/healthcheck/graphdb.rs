@@ -51,7 +51,6 @@ pub(super) async fn healthcheck_graphdb(graphdb: Graph) -> Result<(), HealthChec
             }
         };
         // implement first item check
-        println!("graphdb flag");
         if id != 1 {
             tracing::error!("Failed to get id.");
             return Err(HealthCheckError::IncompatibleInGraphDBError);
