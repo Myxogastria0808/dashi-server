@@ -13,13 +13,14 @@
 [workspace]
 resolver = "2"
 members = [
+    "crates/healthcheck",
     "crates/init",
     "crates/presentation",
     "crates/application",
     "crates/domain",
     "crates/infrastructure",
     "migration",
-    "entity",
+    "entity", "crates/healthcheck",
 ]
 
 [workspace.package]

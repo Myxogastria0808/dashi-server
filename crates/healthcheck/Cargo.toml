@@ -1,0 +1,20 @@
+[package]
+name = "healthcheck"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+# DDD
+infrastructure = { path = "../infrastructure" }
+domain = { path = "../domain" }
+# seaorm
+tokio.workspace = true
+entity.workspace = true
+sea-orm.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+# neo4j
+neo4rs.workspace = true
+# logging
+tracing.workspace = true
+tracing-subscriber.workspace = true
