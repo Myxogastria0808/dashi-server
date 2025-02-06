@@ -3,51 +3,51 @@ use domain::{
     value_object::error::{critical_incident, delete_item::DeleteItemError},
 };
 use entity::{
-    item::{self, Entity as Item},
+    item::Entity as Item,
     trash::{self, Entity as Trash},
 };
 use meilisearch_sdk::client::Client;
 use neo4rs::{query, Graph, Node};
-use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
-    Set,
-};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, IntoActiveModel, Set};
 
 pub(super) async fn delete(
     rdb: DatabaseConnection,
     graphdb: Graph,
     meilisearch: Client,
-    visible_id: String,
+    id: u32,
 ) -> Result<(), DeleteItemError> {
     ////* validation *////
-    //* validation of visible_id is exist *//
-    // validation of visible_id is exist in Item Table
-    let item_model = match Item::find()
-        .filter(item::Column::VisibleId.eq(visible_id.to_owned()))
-        .all(&rdb)
-        .await
-    {
+    //* validation of id is not 1 *//
+    // validation of id is not 1 in Item Table
+    if id == 1 {
+        // If id is 1
+        return Err(DeleteItemError::CannotDeleteRootItemError);
+    }
+
+    //* validation of id is exist *//
+    // validation of id is exist in Item Table
+    let item_model = match Item::find_by_id(id as i32).all(&rdb).await {
         Ok(item_models) => {
             if item_models.len() > 1 {
-                // If multiple visible_ids already exist
+                // If multiple ids already exist
                 //* critical incident *//
                 critical_incident::conflict_error().await;
-                return Err(DeleteItemError::VisibleIdConflictInItemTableError);
+                return Err(DeleteItemError::IdConflictInItemTableError);
             }
             if item_models.is_empty() {
-                // If visible_id does not exist
-                return Err(DeleteItemError::VisibleIdNotFoundInItemTableError);
+                // If id does not exist
+                return Err(DeleteItemError::IdNotFoundInItemTableError);
             }
             item_models[0].clone()
         }
         Err(e) => return Err(DeleteItemError::RDBError(e)),
     };
-    // validation of visible_id is exist in MeiliSearch
-    let filter_query = &format!(r#"visible_id = "{}""#, visible_id.to_owned());
+    // validation of id is exist in MeiliSearch
+    let filter_query = &format!(r#"id = "{}""#, id);
     let meilisearch_item: Vec<MeilisearchData> = meilisearch
         .index("item")
         .search()
-        .with_query(&visible_id)
+        .with_query(&id.to_string())
         .with_filter(filter_query)
         .execute()
         .await?
@@ -59,22 +59,15 @@ pub(super) async fn delete(
         // If multiple visible_ids already exist
         //* critical incident *//
         critical_incident::conflict_error().await;
-        return Err(DeleteItemError::VisibleIdConflictInMeiliSerachError);
+        return Err(DeleteItemError::IdConflictInMeiliSerachError);
     }
     if meilisearch_item.is_empty() {
         // If visible_id does not exist
-        return Err(DeleteItemError::VisibleIdNotFoundInMeiliSearchError);
+        return Err(DeleteItemError::IdNotFoundInMeiliSearchError);
     }
     //drop filter_query and meilisearch_item
     let _ = filter_query;
     let _ = meilisearch_item;
-
-    //* validation of id is not 1 *//
-    // validation of id is not 1 in Item Table
-    if item_model.id == 1 {
-        // If id is 1
-        return Err(DeleteItemError::CannotDeleteRootItemError);
-    }
 
     //* validation of id is exist and is leaf *//
     // validation of id is exist and is leaf in GraphDB
@@ -83,7 +76,7 @@ pub(super) async fn delete(
             query(
                 "MATCH (item:Item {id: $id}) WHERE NOT exists(()-[:ItemTree]->(item)) RETURN item",
             )
-            .param("id", item_model.id),
+            .param("id", id),
         )
         .await?;
     // parse node

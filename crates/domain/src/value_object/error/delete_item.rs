@@ -4,14 +4,14 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum DeleteItemError {
-    #[error("VisibleIdConflictnItemTableError: Conflict VisibleId in Item Table.")]
-    VisibleIdConflictInItemTableError,
-    #[error("VisibleIdNotFoundInItemTableError: VisibleId not found in Item Table.")]
-    VisibleIdNotFoundInItemTableError,
-    #[error("VisibleIdConflictInMeiliSerachError: Conflict VisibleId in MeiliSerach.")]
-    VisibleIdConflictInMeiliSerachError,
-    #[error("VisibleIdNotFoundInMeiliSearchError: VisibleId not found in MeiliSearch.")]
-    VisibleIdNotFoundInMeiliSearchError,
+    #[error("IdConflictInItemTableError: Conflict VisibleId in Item Table.")]
+    IdConflictInItemTableError,
+    #[error("IdNotFoundInItemTableError: VisibleId not found in Item Table.")]
+    IdNotFoundInItemTableError,
+    #[error("IdConflictInMeiliSerachError: Conflict VisibleId in MeiliSerach.")]
+    IdConflictInMeiliSerachError,
+    #[error("IdNotFoundInMeiliSearchError: VisibleId not found in MeiliSearch.")]
+    IdNotFoundInMeiliSearchError,
     #[error("VisibleIdConflictInGraphDBError: Conflict VisibleId in GraphDB.")]
     VisibleIdConflictInGraphDBError,
     #[error("VisibleIdNotFoundInGraphDBError: VisibleId not found in GraphDB.")]
@@ -37,28 +37,28 @@ pub enum DeleteItemError {
 impl From<DeleteItemError> for AppError {
     fn from(error: DeleteItemError) -> Self {
         match error {
-            DeleteItemError::VisibleIdConflictInItemTableError => AppError {
+            DeleteItemError::IdConflictInItemTableError => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "delete-item/visible-id-conflict-in-item-table".to_string(),
-                message: "VisibleIdConflictnItemTableError: Conflict VisibleId in Item Table."
+                message: "IdConflictInItemTableError: Conflict VisibleId in Item Table."
                     .to_string(),
             },
-            DeleteItemError::VisibleIdNotFoundInItemTableError => AppError {
+            DeleteItemError::IdNotFoundInItemTableError => AppError {
                 status_code: StatusCode::BAD_REQUEST,
                 code: "delete-item/visible-id-not-found-in-item-table".to_string(),
-                message: "VisibleIdNotFoundInItemTableError: VisibleId not found in Item Table."
+                message: "IdNotFoundInItemTableError: VisibleId not found in Item Table."
                     .to_string(),
             },
-            DeleteItemError::VisibleIdConflictInMeiliSerachError => AppError {
+            DeleteItemError::IdConflictInMeiliSerachError => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "delete-item/visible-id-conflict-in-meilisearch".to_string(),
-                message: "VisibleIdConflictInMeiliSerachError: Conflict VisibleId in MeiliSerach."
+                message: "IdConflictInMeiliSerachError: Conflict VisibleId in MeiliSerach."
                     .to_string(),
             },
-            DeleteItemError::VisibleIdNotFoundInMeiliSearchError => AppError {
+            DeleteItemError::IdNotFoundInMeiliSearchError => AppError {
                 status_code: StatusCode::BAD_REQUEST,
                 code: "delete-item/visible-id-not-found-in-meilisearch".to_string(),
-                message: "VisibleIdNotFoundInMeiliSearchError: VisibleId not found in MeiliSearch."
+                message: "IdNotFoundInMeiliSearchError: VisibleId not found in MeiliSearch."
                     .to_string(),
             },
             DeleteItemError::VisibleIdConflictInGraphDBError => AppError {

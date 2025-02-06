@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
 pub struct SearchItemData {
     pub visible_id: String,
     pub name: String,

@@ -1,7 +1,7 @@
 use crate::value_object::error::AppError;
 use async_std::future::Future;
 
-pub trait DeleteItemRepository {
+pub trait DeleteItemRepository: Send + Sync + 'static {
     fn new() -> impl Future<Output = Self> + Send
     where
         Self: std::marker::Sized;
@@ -12,11 +12,11 @@ pub trait DeleteItemRepository {
 }
 
 pub struct DeleteItemInterface {
-    pub visible_id: String,
+    pub visible_id: u32,
 }
 
 impl DeleteItemInterface {
-    pub async fn new(visible_id: String) -> Self {
+    pub async fn new(visible_id: u32) -> Self {
         Self { visible_id }
     }
 }

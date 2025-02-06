@@ -2,13 +2,15 @@ use crate::RwLockSharedState;
 use application::usecase::item::{
     delete::{DeleteItemInputs, DeleteItemOutputs},
     register::{RegisterItemInputs, RegisterItemOutputs},
+    update::{UpdateItemDataJson, UpdateItemInputs, UpdateItemOutputs},
 };
 use axum::{
+    debug_handler,
     extract::{Path, Query, State},
     Json,
 };
 use domain::{
-    entity::data_type::{register_item::RegisterItemData, update_item::UpdateItemData},
+    entity::data_type::{register_item::RegisterItemData, transfer_item::TransferItemData},
     value_object::error::AppError,
 };
 use std::collections::HashMap;
@@ -103,32 +105,64 @@ pub async fn register_handler(
 }
 
 pub async fn update_handler(
+    Path(id): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
-    Json(update_data): Json<UpdateItemData>,
-) -> String {
+    Json(update_item_data_json): Json<UpdateItemDataJson>,
+) -> Result<(), AppError> {
     tracing::info!("reached item/update handler.");
-    tracing::info!("body (update_data): {:?}", update_data);
+    tracing::info!("path (id): {}", id);
+    tracing::info!("body (update_item_data_json): {:?}", update_item_data_json);
     let shared_model = shared_state.write().await;
     //operation
+    let inputs = UpdateItemInputs {
+        id,
+        update_item_data_json,
+    };
+    let outputs = UpdateItemOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().update_item,
+    )
+    .await;
+    outputs.run(inputs).await?;
     drop(shared_model);
-    "update_handler".to_string()
+    Ok(())
 }
 
 pub async fn delete_handler(
-    Path(visible_id): Path<String>,
+    Path(id): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
 ) -> Result<(), AppError> {
     tracing::info!("reached item/delete handler.");
-    tracing::info!("path (visible_id): {}", visible_id);
+    tracing::info!("path (id): {}", id);
     let shared_model = shared_state.write().await;
     //operation
-    let inputs = DeleteItemInputs { visible_id };
+    let inputs = DeleteItemInputs { id };
     let outputs = DeleteItemOutputs::new(
         shared_model.clone().healthcheck,
         shared_model.clone().delete_item,
     )
     .await;
     outputs.run(inputs).await?;
+    drop(shared_model);
+    Ok(())
+}
+
+#[axum::debug_handler]
+pub async fn transfer_handler(
+    State(shared_state): State<RwLockSharedState>,
+    Json(transfer_item_data): Json<Vec<TransferItemData>>,
+) -> Result<(), AppError> {
+    tracing::info!("reached item/transfer handler.");
+    tracing::info!("body (transfer_item_data_inputs): {:?}", transfer_item_data);
+    let shared_model = shared_state.write().await;
+    //operation
+    // let inputs = TransferItemInputs { transfer_item_data };
+    // let outputs = TransferItemOutputs::new(
+    //     shared_model.clone().healthcheck,
+    //     shared_model.clone().move_item,
+    // )
+    // .await;
+    // outputs.run(inputs).await?;
     drop(shared_model);
     Ok(())
 }

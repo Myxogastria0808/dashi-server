@@ -8,5 +8,6 @@ edition.workspace = true
 domain = { path = "../domain" }
 # axum
 async-std.workspace = true
+serde.workspace = true
 # seaorm
 entity.workspace = true

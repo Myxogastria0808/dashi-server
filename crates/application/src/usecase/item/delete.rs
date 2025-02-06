@@ -7,7 +7,7 @@ use domain::{
 };
 
 pub struct DeleteItemInputs {
-    pub visible_id: String,
+    pub id: u32,
 }
 
 pub struct DeleteItemOutputs<T: HealthCheckRepository, S: DeleteItemRepository> {
@@ -24,7 +24,7 @@ impl<T: HealthCheckRepository, S: DeleteItemRepository> DeleteItemOutputs<T, S> 
     }
     pub async fn run(&self, delete_item_inputs: DeleteItemInputs) -> Result<(), AppError> {
         self.healyhcheck_repository.healthcheck().await?;
-        let delete_item_interface = DeleteItemInterface::new(delete_item_inputs.visible_id).await;
+        let delete_item_interface = DeleteItemInterface::new(delete_item_inputs.id).await;
         self.delete_item_repository
             .delete(delete_item_interface)
             .await

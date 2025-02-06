@@ -1,14 +1,16 @@
 use application::model::shared_state::SharedStateUseCase;
 use async_std::sync::{Arc, RwLock};
 use axum::{extract::DefaultBodyLimit, http::Method, routing::get, Router};
+use error::api::ApiError;
 use tower_http::cors::{Any, CorsLayer};
 // use utoipa::OpenApi;
 // use utoipa_swagger_ui::SwaggerUi;
 
 // レイヤードアーキテクチャに違反しているが、Rustの性質上不可能なのでinfrastructure層及びdomain層から直接呼び出す
-use domain::{factory::shared_state::SharedStateFactory, value_object::error::api::ApiError};
+use domain::factory::shared_state::SharedStateFactory;
 use infrastructure::shared_state::SharedState;
 
+mod error;
 mod handler;
 mod route;
 
