@@ -1,10 +1,12 @@
 use domain::repository::healthcheck::HealthCheckRepository;
 use infrastructure::healthcheck;
 use init::initializer;
+use migration::migration;
 
 mod init;
+mod migration;
 
-#[tokio::main(flavor = "current_thread")]
+#[tokio::main]
 async fn main() {
     // tracing
     let subscriber = tracing_subscriber::FmtSubscriber::builder()
@@ -21,6 +23,8 @@ async fn main() {
         }
         Err(_) => {
             // not initialized
+            // migration
+            migration().await;
             // initialize
             initializer().await;
         }

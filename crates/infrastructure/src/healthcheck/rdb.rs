@@ -40,7 +40,7 @@ pub(super) async fn healthcheck_rdb(rdb: DatabaseConnection) -> Result<(), Healt
         visible_id: "0000".to_string(),
         name: "筑波大学".to_string(),
         product_number: "".to_string(),
-        description: "ルートの物品です。".to_string(),
+        description: "根の物品です。".to_string(),
         purchase_year: None,
         purchase_price: None,
         durability: None,

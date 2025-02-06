@@ -5,7 +5,6 @@ use application::usecase::item::{
     update::{UpdateItemDataJson, UpdateItemInputs, UpdateItemOutputs},
 };
 use axum::{
-    debug_handler,
     extract::{Path, Query, State},
     Json,
 };

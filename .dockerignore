@@ -8,7 +8,7 @@ migration/target
 .envrc
 .gitignore
 .dockerignore
-init.Dockerfile
+dev.Dockerfile
 server.Dockerfile
 dev.compose.yaml
 prod.compose.yaml

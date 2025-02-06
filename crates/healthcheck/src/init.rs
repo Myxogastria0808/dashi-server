@@ -1,10 +1,9 @@
-use domain::repository::healthcheck::HealthCheckRepository;
 use domain::{entity::data_type::meilisearch, repository::connection::ConnectionRepository};
 use entity::{
     item::{self, Entity as Item},
     label::{self, Entity as Label},
 };
-use infrastructure::{connection, healthcheck};
+use infrastructure::connection;
 use neo4rs::{query, Node};
 use sea_orm::{self, EntityTrait, Set};
 
@@ -70,7 +69,7 @@ pub(super) async fn initializer() {
         visible_id: Set("0000".to_string()),
         name: Set("筑波大学".to_string()),
         product_number: Set("".to_string()),
-        description: Set("ルートの物品です。".to_string()),
+        description: Set("根の物品です。".to_string()),
         is_depreciation: Set(false),
         connector: Set(serde_json::json!(root_item_connector)),
         is_rent: Set(false),
