@@ -70,7 +70,7 @@ async fn ping() -> String {
             url = "http://www.wtfpl.net"
         ),
     ),
-    servers((url = "http://localhost:5000")),
+    servers((url = "http://0.0.0.0:5000")),
     tags(
         (name = "Health Check", description = "Health Checkのエンドポイント"),
         // (name = "Item", description = "物品に関係するエンドポイント"),
