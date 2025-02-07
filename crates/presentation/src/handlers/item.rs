@@ -1,4 +1,3 @@
-use crate::RwLockSharedState;
 use application::usecase::item::{
     delete::{DeleteItemInputs, DeleteItemOutputs},
     register::{RegisterItemInputs, RegisterItemOutputs},
@@ -6,6 +5,8 @@ use application::usecase::item::{
 };
 use axum::{
     extract::{Path, Query, State},
+    http::StatusCode,
+    response::IntoResponse,
     Json,
 };
 use domain::{
@@ -13,6 +14,8 @@ use domain::{
     value_object::error::AppError,
 };
 use std::collections::HashMap;
+
+use crate::models::rwlock_shared_state::RwLockSharedState;
 
 pub async fn search_handler(
     Query(param): Query<HashMap<String, String>>,
@@ -87,7 +90,7 @@ pub async fn delete_history_handler(
 pub async fn register_handler(
     State(shared_state): State<RwLockSharedState>,
     Json(register_item_data): Json<RegisterItemData>,
-) -> Result<(), AppError> {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached item/register handler.");
     tracing::info!("body (register_data): {:?}", register_item_data);
     let shared_model = shared_state.write().await;
@@ -100,14 +103,14 @@ pub async fn register_handler(
     .await;
     outputs.run(inputs).await?;
     drop(shared_model);
-    Ok(())
+    Ok((StatusCode::CREATED).into_response())
 }
 
 pub async fn update_handler(
     Path(id): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
     Json(update_item_data_json): Json<UpdateItemDataJson>,
-) -> Result<(), AppError> {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached item/update handler.");
     tracing::info!("path (id): {}", id);
     tracing::info!("body (update_item_data_json): {:?}", update_item_data_json);
@@ -124,13 +127,13 @@ pub async fn update_handler(
     .await;
     outputs.run(inputs).await?;
     drop(shared_model);
-    Ok(())
+    Ok((StatusCode::OK).into_response())
 }
 
 pub async fn delete_handler(
     Path(id): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
-) -> Result<(), AppError> {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached item/delete handler.");
     tracing::info!("path (id): {}", id);
     let shared_model = shared_state.write().await;
@@ -143,14 +146,13 @@ pub async fn delete_handler(
     .await;
     outputs.run(inputs).await?;
     drop(shared_model);
-    Ok(())
+    Ok((StatusCode::OK).into_response())
 }
 
-#[axum::debug_handler]
 pub async fn transfer_handler(
     State(shared_state): State<RwLockSharedState>,
     Json(transfer_item_data): Json<Vec<TransferItemData>>,
-) -> Result<(), AppError> {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached item/transfer handler.");
     tracing::info!("body (transfer_item_data_inputs): {:?}", transfer_item_data);
     let shared_model = shared_state.write().await;
@@ -163,5 +165,5 @@ pub async fn transfer_handler(
     // .await;
     // outputs.run(inputs).await?;
     drop(shared_model);
-    Ok(())
+    Ok((StatusCode::OK).into_response())
 }

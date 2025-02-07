@@ -1,6 +1,6 @@
 use crate::{
-    handler::generate::{barcode_handler, nothing_handler, qr_handler},
-    RwLockSharedState,
+    handlers::generate::{barcode_handler, nothing_handler, qr_handler},
+    models::rwlock_shared_state::RwLockSharedState,
 };
 use axum::{routing::post, Router};
 

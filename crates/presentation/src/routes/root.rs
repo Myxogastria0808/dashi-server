@@ -1,9 +1,9 @@
-use crate::route::csv::csv_route;
-use crate::route::generate::generate_route;
-use crate::route::item::item_route;
-use crate::route::rental::rent_route;
-use crate::route::utils::util_route;
-use crate::RwLockSharedState;
+use crate::models::rwlock_shared_state::RwLockSharedState;
+use crate::routes::csv::csv_route;
+use crate::routes::generate::generate_route;
+use crate::routes::item::item_route;
+use crate::routes::rental::rent_route;
+use crate::routes::utils::util_route;
 use axum::Router;
 
 pub fn root_route() -> Router<RwLockSharedState> {

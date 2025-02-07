@@ -1,6 +1,6 @@
 use crate::{
-    handler::utils::{healthcheck_handler, login_handler},
-    RwLockSharedState,
+    handlers::utils::{healthcheck_handler, login_handler},
+    models::rwlock_shared_state::RwLockSharedState,
 };
 use axum::{
     routing::{get, post},

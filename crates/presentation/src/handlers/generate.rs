@@ -1,16 +1,30 @@
-use crate::RwLockSharedState;
 use application::usecase::generate::{GenerateInputs, GenerateOutputs};
 use axum::{
     extract::{Path, State},
+    http::StatusCode,
+    response::IntoResponse,
     Json,
 };
 use domain::value_object::error::AppError;
 use entity::label::Record;
 
+use crate::models::rwlock_shared_state::RwLockSharedState;
+
+#[utoipa::path(
+    post,
+    path = "/api/generate/qr/{quantity}",
+    params(("quantity", Path, description = "generate visible id's quantity")),
+    tag = "Generate",
+    responses(
+        (status = 201, description = "CREATED", body = GenerateData),
+        (status = 500, description = "Internal Server Error"),
+        (status = 501, description = "Service Unavailable")
+    ),
+)]
 pub async fn qr_handler(
     Path(quantity): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
-) -> Result<Json<Vec<String>>, AppError> {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached generate/qr handler.");
     tracing::info!("path (quantity): {}", quantity);
     let shared_model = shared_state.write().await;
@@ -26,13 +40,24 @@ pub async fn qr_handler(
     .await;
     let result = generate_outputs.run(generate_inputs).await?;
     drop(shared_model);
-    Ok(Json(result))
+    Ok((StatusCode::CREATED, Json(result)).into_response())
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/generate/barcode/{quantity}",
+    params(("quantity", Path, description = "generate visible id's quantity")),
+    tag = "Generate",
+    responses(
+        (status = 201, description = "CREATED", body = GenerateData),
+        (status = 500, description = "Internal Server Error"),
+        (status = 501, description = "Service Unavailable")
+    ),
+)]
 pub async fn barcode_handler(
     Path(quantity): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
-) -> Result<Json<Vec<String>>, AppError> {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached generate/barcode handler.");
     tracing::info!("path (quantity): {}", quantity);
     let shared_model = shared_state.write().await;
@@ -48,13 +73,24 @@ pub async fn barcode_handler(
     .await;
     let result = generate_outputs.run(generate_inputs).await?;
     drop(shared_model);
-    Ok(Json(result))
+    Ok((StatusCode::CREATED, Json(result)).into_response())
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/generate/nothing/{quantity}",
+    params(("quantity", Path, description = "generate visible id's quantity")),
+    tag = "Generate",
+    responses(
+        (status = 201, description = "CREATED", body = GenerateData),
+        (status = 500, description = "Internal Server Error"),
+        (status = 501, description = "Service Unavailable")
+    ),
+)]
 pub async fn nothing_handler(
     Path(quantity): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
-) -> Result<Json<Vec<String>>, AppError> {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached generate/nothing handler.");
     tracing::info!("path (quantity): {}", quantity);
     let shared_model = shared_state.write().await;
@@ -70,5 +106,5 @@ pub async fn nothing_handler(
     .await;
     let result = generate_outputs.run(generate_inputs).await?;
     drop(shared_model);
-    Ok(Json(result))
+    Ok((StatusCode::CREATED, Json(result)).into_response())
 }

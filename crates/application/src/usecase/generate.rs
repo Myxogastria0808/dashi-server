@@ -1,4 +1,5 @@
 use domain::{
+    entity::data_type::generate::GenerateData,
     repository::{
         generate::{GenerateInterface, GenerateRepository},
         healthcheck::HealthCheckRepository,
@@ -24,7 +25,7 @@ impl<T: HealthCheckRepository, S: GenerateRepository> GenerateOutputs<T, S> {
             generate_repository,
         }
     }
-    pub async fn run(&self, generate_inputs: GenerateInputs) -> Result<Vec<String>, AppError> {
+    pub async fn run(&self, generate_inputs: GenerateInputs) -> Result<GenerateData, AppError> {
         self.healthcheck_repository.healthcheck().await?;
         let generate_interface =
             GenerateInterface::new(generate_inputs.quantity, generate_inputs.record).await;

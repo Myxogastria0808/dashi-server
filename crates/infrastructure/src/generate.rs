@@ -1,5 +1,6 @@
 use crate::{connection, generate::generate_module::generate};
 use domain::{
+    entity::data_type::generate::GenerateData,
     repository::{
         connection::ConnectionRepository,
         generate::{GenerateInterface, GenerateRepository},
@@ -19,7 +20,7 @@ impl GenerateRepository for Generate {
     async fn generate(
         &self,
         generate_interface: GenerateInterface,
-    ) -> Result<Vec<String>, AppError> {
+    ) -> Result<GenerateData, AppError> {
         let rdb = connection::CollectConnection::connect_rdb().await?;
         let result = generate(
             rdb.to_owned(),

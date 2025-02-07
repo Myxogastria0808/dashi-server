@@ -1,4 +1,4 @@
-use crate::value_object::error::AppError;
+use crate::{entity::data_type::generate::GenerateData, value_object::error::AppError};
 use async_std::future::Future;
 use entity::label::Record;
 
@@ -9,7 +9,7 @@ pub trait GenerateRepository {
     fn generate(
         &self,
         generate_interface: GenerateInterface,
-    ) -> impl Future<Output = Result<Vec<String>, AppError>> + Send;
+    ) -> impl Future<Output = Result<GenerateData, AppError>> + Send;
 }
 
 pub struct GenerateInterface {

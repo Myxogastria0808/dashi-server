@@ -1,4 +1,5 @@
 pub mod depreiation_csv;
+pub mod generate;
 pub mod individual_item;
 pub mod item_csv;
 pub mod meilisearch;

@@ -1,5 +1,6 @@
-use crate::RwLockSharedState;
 use axum::extract::State;
+
+use crate::models::rwlock_shared_state::RwLockSharedState;
 
 pub async fn depreiation_handler(State(shared_state): State<RwLockSharedState>) -> String {
     tracing::info!("reached csv/depreiation handler.");

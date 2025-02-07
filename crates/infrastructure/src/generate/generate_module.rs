@@ -1,4 +1,7 @@
-use domain::value_object::error::{critical_incident, generate::GenerateError};
+use domain::{
+    entity::data_type::generate::GenerateData,
+    value_object::error::{critical_incident, generate::GenerateError},
+};
 use entity::label::{self, Entity as Label, Record};
 use radix_fmt::radix_36;
 use sea_orm::{
@@ -10,7 +13,7 @@ pub(super) async fn generate(
     rdb: DatabaseConnection,
     quantity: u32,
     qr_or_barcode: Record,
-) -> Result<Vec<String>, GenerateError> {
+) -> Result<GenerateData, GenerateError> {
     //* validation *//
     let max_label_models = Label::find()
         .filter(label::Column::IsMax.eq(true))
@@ -56,14 +59,14 @@ pub(super) async fn generate(
 
     // generate new labels
     let mut new_label_models: Vec<label::ActiveModel> = Vec::new();
-    let mut new_label_visible_id: Vec<String> = Vec::new();
+    let mut new_label_visible_ids: Vec<String> = Vec::new();
     for i in 1..=quantity {
         let visible_id = format!(
             "{:0>4}",
             radix_36(visible_id_10bit + i).to_string().to_uppercase()
         );
 
-        new_label_visible_id.push(visible_id.to_owned());
+        new_label_visible_ids.push(visible_id.to_owned());
         if i == quantity {
             // IsMax: true (last)
             let insert_label_model = label::ActiveModel {
@@ -109,5 +112,7 @@ pub(super) async fn generate(
         }
     }
 
-    Ok(new_label_visible_id)
+    Ok(GenerateData {
+        visible_ids: new_label_visible_ids,
+    })
 }

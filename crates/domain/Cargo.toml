@@ -9,6 +9,7 @@ dotenvy.workspace = true
 # axum
 async-std.workspace = true
 axum.workspace = true
+utoipa.workspace = true
 # seaorm
 sea-orm.workspace = true
 entity.workspace = true

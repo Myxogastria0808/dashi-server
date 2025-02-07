@@ -19,7 +19,7 @@ pub(super) async fn healthcheck_rdb(rdb: DatabaseConnection) -> Result<(), Healt
     };
     let correct_root_label = label::Model {
         visible_id: "0000".to_string(),
-        is_max: true,
+        is_max: root_label.is_max,
         record: Record::Nothing,
     };
 

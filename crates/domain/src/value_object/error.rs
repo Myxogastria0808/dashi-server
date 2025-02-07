@@ -24,11 +24,14 @@ pub struct AppError {
 
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
-        Json(json!({
-            "status_code": format!("{}", self.status_code),
-            "code": self.code,
-            "message": self.message,
-        }))
-        .into_response()
+        (
+            self.status_code,
+            Json(json!({
+                "status_code": format!("{}", self.status_code),
+                "code": self.code,
+                "message": self.message,
+            })),
+        )
+            .into_response()
     }
 }

@@ -1,6 +1,6 @@
 use crate::{
-    handler::csv::{depreiation_handler, item_handler},
-    RwLockSharedState,
+    handlers::csv::{depreiation_handler, item_handler},
+    models::rwlock_shared_state::RwLockSharedState,
 };
 use axum::{routing::get, Router};
 
