@@ -18,7 +18,7 @@ pub async fn login_handler(State(shared_state): State<RwLockSharedState>) -> Str
     tag = "Health Check",
     responses(
         (status = 200, description = "OK"),
-        (status = 500, description = "Internal Server Error")
+        (status = 500, description = "Internal Server Error", body = ResponseError),
     ),
 )]
 pub async fn healthcheck_handler(

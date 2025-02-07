@@ -4,6 +4,8 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum SearchItemError {
+    #[error("EmptyKeywordsError: Keywords is empty.")]
+    EmptyKeywordsError,
     #[error(transparent)]
     MeiliSearchError(#[from] meilisearch_sdk::errors::Error),
 }
@@ -11,6 +13,11 @@ pub enum SearchItemError {
 impl From<SearchItemError> for AppError {
     fn from(error: SearchItemError) -> Self {
         match error {
+            SearchItemError::EmptyKeywordsError => AppError {
+                status_code: StatusCode::BAD_REQUEST,
+                code: "search-item/empty-keywords".to_string(),
+                message: "EmptyKeywordsError: Keywords is empty.".to_string(),
+            },
             SearchItemError::MeiliSearchError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "delete-item/meilisearch".to_string(),

@@ -87,6 +87,7 @@ async fn ping() -> String {
     ),
     components(schemas(
         domain::entity::data_type::generate::GenerateData,
+        domain::value_object::error::ResponseError,
         domain::entity::data_type::register_item::RegisterItemData,
         application::usecase::item::update::UpdateItemDataJson,
     ))

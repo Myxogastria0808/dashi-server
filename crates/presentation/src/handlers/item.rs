@@ -97,9 +97,9 @@ pub async fn archive_handler(
     ),
     responses(
         (status = 201, description = "CREATED"),
-        (status = 400, description = "Bad Request"),
-        (status = 500, description = "Internal Server Error"),
-        (status = 501, description = "Service Unavailable")
+        (status = 400, description = "Bad Request", body = ResponseError),
+        (status = 500, description = "Internal Server Error", body = ResponseError),
+        (status = 501, description = "Service Unavailable", body = ResponseError),
     ),
 )]
 pub async fn register_handler(
@@ -132,8 +132,8 @@ pub async fn register_handler(
     ),
     responses(
         (status = 200, description = "OK"),
-        (status = 400, description = "Bad Request"),
-        (status = 500, description = "Internal Server Error")
+        (status = 400, description = "Bad Request", body = ResponseError),
+        (status = 500, description = "Internal Server Error", body = ResponseError),
     ),
 )]
 pub async fn update_handler(
@@ -167,8 +167,8 @@ pub async fn update_handler(
     params(("id", Path, description = "item id (not visible id)")),
     responses(
         (status = 200, description = "OK"),
-        (status = 400, description = "Bad Request"),
-        (status = 500, description = "Internal Server Error")
+        (status = 400, description = "Bad Request", body = ResponseError),
+        (status = 500, description = "Internal Server Error", body = ResponseError),
     ),
 )]
 pub async fn delete_handler(
