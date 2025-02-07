@@ -73,7 +73,7 @@ async fn ping() -> String {
     servers((url = "http://0.0.0.0:5000")),
     tags(
         (name = "Health Check", description = "Health Checkのエンドポイント"),
-        // (name = "Item", description = "物品に関係するエンドポイント"),
+        (name = "Item", description = "物品に関係するエンドポイント"),
         (name = "Generate", description = "QRまたはBarcodeを生成するエンドポイント"),
     ),
     paths(
@@ -81,9 +81,14 @@ async fn ping() -> String {
         crate::handlers::generate::barcode_handler,
         crate::handlers::generate::nothing_handler,
         crate::handlers::utils::healthcheck_handler,
+        crate::handlers::item::delete_handler,
+        crate::handlers::item::register_handler,
+        crate::handlers::item::update_handler,
     ),
     components(schemas(
         domain::entity::data_type::generate::GenerateData,
+        domain::entity::data_type::register_item::RegisterItemData,
+        application::usecase::item::update::UpdateItemDataJson,
     ))
 )]
 struct ApiDoc;

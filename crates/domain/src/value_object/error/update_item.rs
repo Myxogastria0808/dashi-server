@@ -4,6 +4,8 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum UpdateItemError {
+    #[error("CannotupdateRootItemError: Can not update root item.")]
+    CannotupdateRootItemError,
     #[error("IdConflictInItemTableError: Conflict VisibleId in Item Table.")]
     IdConflictInItemTableError,
     #[error("IdNotFoundInItemTableError: VisibleId not found in Item Table.")]
@@ -33,6 +35,11 @@ pub enum UpdateItemError {
 impl From<UpdateItemError> for AppError {
     fn from(error: UpdateItemError) -> Self {
         match error {
+            UpdateItemError::CannotupdateRootItemError => AppError {
+                status_code: StatusCode::BAD_REQUEST,
+                code: "update-item/cannot-update-root-item".to_string(),
+                message: "CannotupdateRootItemError: Can not update root item.".to_string(),
+            },
             UpdateItemError::IdConflictInItemTableError => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "update-item/id-conflict-in-item-table".to_string(),

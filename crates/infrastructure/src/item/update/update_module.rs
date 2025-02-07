@@ -18,6 +18,13 @@ pub(super) async fn update(
     update_item_data: UpdateItemData,
 ) -> Result<(), UpdateItemError> {
     ////* validation *////
+    //* validation of id is not 1 *//
+    // validation of id is not 1 in Item Table
+    if update_item_data.id == 1 {
+        // If id is 1
+        return Err(UpdateItemError::CannotupdateRootItemError);
+    }
+
     //* validation of name is not empty *//
     if update_item_data.name.chars().count() == 0 {
         return Err(UpdateItemError::ItemNameEmptyError);

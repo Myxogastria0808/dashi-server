@@ -7,8 +7,9 @@ use domain::{
     value_object::error::AppError,
 };
 use serde::Deserialize;
+use utoipa::ToSchema;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateItemDataJson {
     pub visible_id: String,
     pub name: String,

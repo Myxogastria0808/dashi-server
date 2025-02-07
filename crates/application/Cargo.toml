@@ -9,5 +9,6 @@ domain = { path = "../domain" }
 # axum
 async-std.workspace = true
 serde.workspace = true
+utoipa.workspace = true
 # seaorm
 entity.workspace = true

@@ -75,18 +75,33 @@ pub async fn cable_handler(
     "cable_handler".to_string()
 }
 
-pub async fn delete_history_handler(
+pub async fn archive_handler(
     Path(limit): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
-    tracing::info!("reached item/delete-history handler.");
+    tracing::info!("reached item/archive handler.");
     tracing::info!("path (limit): {}", limit);
     let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
-    "delete_history_handler".to_string()
+    "archive_handler".to_string()
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/item/register",
+    tag = "Item",
+    request_body(
+        description = "RegisterItemData",
+        content = RegisterItemData,
+    ),
+    responses(
+        (status = 201, description = "CREATED"),
+        (status = 400, description = "Bad Request"),
+        (status = 500, description = "Internal Server Error"),
+        (status = 501, description = "Service Unavailable")
+    ),
+)]
 pub async fn register_handler(
     State(shared_state): State<RwLockSharedState>,
     Json(register_item_data): Json<RegisterItemData>,
@@ -106,6 +121,21 @@ pub async fn register_handler(
     Ok((StatusCode::CREATED).into_response())
 }
 
+#[utoipa::path(
+    put,
+    path = "/api/item/update/{id}",
+    tag = "Item",
+    params(("id", Path, description = "item id (not visible id)")),
+    request_body(
+        description = "UpdateItemDataJson",
+        content = UpdateItemDataJson,
+    ),
+    responses(
+        (status = 200, description = "OK"),
+        (status = 400, description = "Bad Request"),
+        (status = 500, description = "Internal Server Error")
+    ),
+)]
 pub async fn update_handler(
     Path(id): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
@@ -127,9 +157,20 @@ pub async fn update_handler(
     .await;
     outputs.run(inputs).await?;
     drop(shared_model);
-    Ok((StatusCode::OK).into_response())
+    Ok((StatusCode::OK, ()).into_response())
 }
 
+#[utoipa::path(
+    delete,
+    path = "/api/item/delete/{id}",
+    tag = "Item",
+    params(("id", Path, description = "item id (not visible id)")),
+    responses(
+        (status = 200, description = "OK"),
+        (status = 400, description = "Bad Request"),
+        (status = 500, description = "Internal Server Error")
+    ),
+)]
 pub async fn delete_handler(
     Path(id): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
@@ -146,7 +187,7 @@ pub async fn delete_handler(
     .await;
     outputs.run(inputs).await?;
     drop(shared_model);
-    Ok((StatusCode::OK).into_response())
+    Ok((StatusCode::OK, ()).into_response())
 }
 
 pub async fn transfer_handler(
@@ -165,5 +206,5 @@ pub async fn transfer_handler(
     // .await;
     // outputs.run(inputs).await?;
     drop(shared_model);
-    Ok((StatusCode::OK).into_response())
+    Ok((StatusCode::OK, ()).into_response())
 }

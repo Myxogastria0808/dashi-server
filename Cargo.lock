@@ -141,6 +141,7 @@ dependencies = [
  "domain",
  "entity",
  "serde",
+ "utoipa",
 ]
 
 [[package]]

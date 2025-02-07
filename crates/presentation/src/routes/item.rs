@@ -1,6 +1,6 @@
 use crate::{
     handlers::item::{
-        cable_handler, connctor_handler, delete_handler, delete_history_handler, each_item_handler,
+        archive_handler, cable_handler, connctor_handler, delete_handler, each_item_handler,
         register_handler, search_handler, transfer_handler, update_handler,
     },
     models::rwlock_shared_state::RwLockSharedState,
@@ -16,7 +16,7 @@ pub fn item_route() -> Router<RwLockSharedState> {
         .route("/:visible_id", get(each_item_handler))
         .route("/connector/:connector_name/search", get(connctor_handler))
         .route("/cable", get(cable_handler))
-        .route("/delete-history/:limit", get(delete_history_handler))
+        .route("/archive/:limit", get(archive_handler))
         .route("/register", post(register_handler))
         .route("/update/:id", put(update_handler))
         .route("/delete/:id", delete(delete_handler))

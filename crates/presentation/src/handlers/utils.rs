@@ -30,5 +30,5 @@ pub async fn healthcheck_handler(
     let healthcheck_usecase = HealthCheckUseCase::new(shared_model.clone().healthcheck).await;
     healthcheck_usecase.run().await?;
     drop(shared_model);
-    Ok((StatusCode::OK).into_response())
+    Ok((StatusCode::OK, ()).into_response())
 }
