@@ -20,7 +20,7 @@ impl From<SearchItemError> for AppError {
             },
             SearchItemError::MeiliSearchError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
-                code: "delete-item/meilisearch".to_string(),
+                code: "search-item/meilisearch".to_string(),
                 message: "MeiliSearchError: MeiliSearchDB trouble is occurred.".to_string(),
             },
         }

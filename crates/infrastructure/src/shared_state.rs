@@ -1,7 +1,7 @@
 use crate::{
     generate::Generate,
     healthcheck::HealthCheck,
-    item::{delete::DeleteItem, register::RegisterItem, update::UpdateItem},
+    item::{delete::DeleteItem, register::RegisterItem, search::SearchItem, update::UpdateItem},
 };
 use domain::{
     factory::shared_state::SharedStateFactory,
@@ -10,7 +10,7 @@ use domain::{
         healthcheck::HealthCheckRepository,
         item::{
             delete::DeleteItemRepository, register::RegisterItemRepository,
-            update::UpdateItemRepository,
+            search::SearchItemRepository, update::UpdateItemRepository,
         },
     },
 };
@@ -18,6 +18,7 @@ use domain::{
 #[allow(dead_code)]
 #[derive(Clone)]
 pub struct SharedState {
+    pub search_item: SearchItem,
     pub update_item: UpdateItem,
     pub delete_item: DeleteItem,
     pub register_item: RegisterItem,
@@ -28,6 +29,7 @@ pub struct SharedState {
 impl SharedStateFactory for SharedState {
     async fn new() -> Self {
         SharedState {
+            search_item: SearchItem::new().await,
             update_item: UpdateItem::new().await,
             delete_item: DeleteItem::new().await,
             register_item: RegisterItem::new().await,

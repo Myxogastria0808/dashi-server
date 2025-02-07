@@ -1,7 +1,9 @@
-use serde::Deserialize;
+use serde::Serialize;
+use utoipa::ToSchema;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct SearchItemData {
+    pub id: i32,
     pub visible_id: String,
     pub name: String,
     pub connector: Vec<String>,

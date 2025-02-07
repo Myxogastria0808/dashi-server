@@ -12,6 +12,7 @@ pub mod critical_incident;
 pub mod delete_item;
 pub mod generate;
 pub mod healthcheck;
+pub mod individual_item;
 pub mod register_item;
 pub mod search_item;
 pub mod transfer_item;

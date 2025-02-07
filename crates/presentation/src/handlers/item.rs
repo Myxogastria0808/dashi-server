@@ -1,6 +1,7 @@
 use application::usecase::item::{
     delete::{DeleteItemInputs, DeleteItemOutputs},
     register::{RegisterItemInputs, RegisterItemOutputs},
+    search::{SearchItemInputs, SearchItemJson, SearchItemOutputs},
     update::{UpdateItemDataJson, UpdateItemInputs, UpdateItemOutputs},
 };
 use axum::{
@@ -17,32 +18,55 @@ use std::collections::HashMap;
 
 use crate::models::rwlock_shared_state::RwLockSharedState;
 
+#[utoipa::path(
+    get,
+    path = "/api/item/search",
+    tag = "Item",
+    params(("keywords", Query, description = "set search word")),
+    responses(
+        (status = 200, description = "OK"),
+        (status = 400, description = "Bad Request", body = ResponseError),
+        (status = 500, description = "Internal Server Error", body = ResponseError),
+    ),
+)]
 pub async fn search_handler(
-    Query(param): Query<HashMap<String, String>>,
+    Query(keywords): Query<HashMap<String, String>>,
     State(shared_state): State<RwLockSharedState>,
-) -> String {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached item/search handler.");
-    tracing::info!("query (keywords): {:?}", param.get("keywords"));
-    let keywords = match param.get("keywords") {
+    tracing::info!("query (keywords): {:?}", keywords.get("keywords"));
+    let keywords = match keywords.get("keywords") {
         Some(keywords) => keywords,
         None => "",
     };
     let shared_model = shared_state.read().await;
-    //operation
+    // operation
+    let inputs = SearchItemInputs {
+        keywords: keywords.to_string(),
+    };
+    let outputs = SearchItemOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().search_item,
+    )
+    .await;
+    let result = outputs.run(inputs).await?;
+    let result = SearchItemJson {
+        search_items: result,
+    };
     drop(shared_model);
-    "search_handler".to_string()
+    Ok((StatusCode::OK, Json(result)).into_response())
 }
 
-pub async fn each_item_handler(
-    Path(visible_id): Path<String>,
+pub async fn individual_item_handler(
+    Path(id): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
-    tracing::info!("reached item/each_item handler.");
-    tracing::info!("path (visible_id): {}", visible_id);
+    tracing::info!("reached item/individual_item handler.");
+    tracing::info!("path (id): {}", id);
     let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
-    "each_item_handler".to_string()
+    "individual_item_handler".to_string()
 }
 
 pub async fn connctor_handler(
@@ -118,7 +142,7 @@ pub async fn register_handler(
     .await;
     outputs.run(inputs).await?;
     drop(shared_model);
-    Ok((StatusCode::CREATED).into_response())
+    Ok((StatusCode::CREATED, ()).into_response())
 }
 
 #[utoipa::path(

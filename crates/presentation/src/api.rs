@@ -84,11 +84,14 @@ async fn ping() -> String {
         crate::handlers::item::delete_handler,
         crate::handlers::item::register_handler,
         crate::handlers::item::update_handler,
+        crate::handlers::item::search_handler,
     ),
     components(schemas(
         domain::entity::data_type::generate::GenerateData,
         domain::value_object::error::ResponseError,
         domain::entity::data_type::register_item::RegisterItemData,
+        domain::entity::data_type::search_item::SearchItemData,
+        application::usecase::item::search::SearchItemJson,
         application::usecase::item::update::UpdateItemDataJson,
     ))
 )]
