@@ -84,6 +84,7 @@ pub async fn api() -> Result<(), ApiError> {
         crate::handlers::item::search_handler,
         crate::handlers::item::individual_item_handler,
         crate::handlers::csv::depreiation_handler,
+        crate::handlers::csv::item_handler,
         crate::handlers::joke::unavailable_handler,
         crate::handlers::joke::teapot_handler,
         crate::handlers::ping::ping_handler,
@@ -99,6 +100,8 @@ pub async fn api() -> Result<(), ApiError> {
         application::usecase::item::individual::IndividualItemDataJson,
         application::usecase::csv::depreiation::DepreiationCsvJson,
         domain::entity::data_type::depreiation_csv::DepreiationCsvData,
+        application::usecase::csv::item::ItemCsvJson,
+        domain::entity::data_type::item_csv::ItemCsvData,
     ))
 )]
 struct ApiDoc;

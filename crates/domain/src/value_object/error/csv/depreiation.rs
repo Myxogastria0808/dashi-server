@@ -1,7 +1,6 @@
+use crate::value_object::error::AppError;
 use axum::http::StatusCode;
 use thiserror::Error;
-
-use crate::value_object::error::AppError;
 
 #[derive(Debug, Error)]
 pub enum DepreiationCsvError {
@@ -14,7 +13,7 @@ impl From<DepreiationCsvError> for AppError {
         match error {
             DepreiationCsvError::RDBError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
-                code: "delete-item/rdb".to_string(),
+                code: "depreiation-csv/rdb".to_string(),
                 message: "RDBError: RDB trouble is occurred.".to_string(),
             },
         }

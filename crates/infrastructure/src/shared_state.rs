@@ -1,5 +1,5 @@
 use crate::{
-    csv::depreiation::DepreiationCsv,
+    csv::{depreiation::DepreiationCsv, item::ItemCsv},
     generate::Generate,
     healthcheck::HealthCheck,
     item::{
@@ -10,7 +10,7 @@ use crate::{
 use domain::{
     factory::shared_state::SharedStateFactory,
     repository::{
-        csv::depreiation::DepreiationCsvRepository,
+        csv::{depreiation::DepreiationCsvRepository, item::ItemCsvRepository},
         generate::GenerateRepository,
         healthcheck::HealthCheckRepository,
         item::{
@@ -24,6 +24,7 @@ use domain::{
 #[allow(dead_code)]
 #[derive(Clone)]
 pub struct SharedState {
+    pub item_csv: ItemCsv,
     pub depreiation_csv: DepreiationCsv,
     pub individual_item: IndividualItem,
     pub search_item: SearchItem,
@@ -37,6 +38,7 @@ pub struct SharedState {
 impl SharedStateFactory for SharedState {
     async fn new() -> Self {
         SharedState {
+            item_csv: ItemCsv::new().await,
             depreiation_csv: DepreiationCsv::new().await,
             individual_item: IndividualItem::new().await,
             search_item: SearchItem::new().await,
