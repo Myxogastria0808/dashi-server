@@ -1,6 +1,7 @@
-use super::AppError;
 use axum::http::StatusCode;
 use thiserror::Error;
+
+use crate::value_object::error::AppError;
 
 #[derive(Debug, Error)]
 pub enum DeleteItemError {

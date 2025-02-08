@@ -1,6 +1,6 @@
 use domain::{
     entity::data_type::{meilisearch::MeilisearchData, search_item::SearchItemData},
-    value_object::error::search_item::SearchItemError,
+    value_object::error::item::search::SearchItemError,
 };
 use meilisearch_sdk::client::Client;
 

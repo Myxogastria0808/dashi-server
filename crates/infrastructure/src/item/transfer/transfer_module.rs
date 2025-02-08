@@ -1,6 +1,6 @@
 use domain::{
     entity::data_type::transfer_item::TransferItemData,
-    value_object::error::{critical_incident, transfer_item::TransferItemError},
+    value_object::error::{critical_incident, item::transfer::TransferItemError},
 };
 use entity::{
     item::{self, Entity as Item},

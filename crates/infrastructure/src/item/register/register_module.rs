@@ -1,6 +1,6 @@
 use domain::{
     entity::data_type::{meilisearch::MeilisearchData, register_item::RegisterItemData},
-    value_object::error::{critical_incident, register_item::RegisterItemError},
+    value_object::error::{critical_incident, item::register::RegisterItemError},
 };
 use entity::{
     item::{self, Entity as Item},

@@ -9,14 +9,10 @@ use utoipa::ToSchema;
 
 pub mod connection;
 pub mod critical_incident;
-pub mod delete_item;
+pub mod csv;
 pub mod generate;
 pub mod healthcheck;
-pub mod individual_item;
-pub mod register_item;
-pub mod search_item;
-pub mod transfer_item;
-pub mod update_item;
+pub mod item;
 
 #[derive(Debug)]
 pub struct AppError {

@@ -1,4 +1,4 @@
-use super::AppError;
+use crate::value_object::error::AppError;
 use axum::http::StatusCode;
 use thiserror::Error;
 

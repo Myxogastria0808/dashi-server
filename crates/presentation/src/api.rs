@@ -67,6 +67,7 @@ pub async fn api() -> Result<(), ApiError> {
     servers((url = "http://0.0.0.0:5000")),
     tags(
         (name = "Item", description = "物品に関係するエンドポイント"),
+        (name = "Csv", description = "csv出力に関するエンドポイント"),
         (name = "Generate", description = "QRまたはBarcodeを生成するエンドポイント"),
         (name = "Health Check", description = "Health Checkのエンドポイント"),
         (name = "Ping", description = "pingを送るエンドポイント"),
@@ -82,6 +83,7 @@ pub async fn api() -> Result<(), ApiError> {
         crate::handlers::item::update_handler,
         crate::handlers::item::search_handler,
         crate::handlers::item::individual_item_handler,
+        crate::handlers::csv::depreiation_handler,
         crate::handlers::joke::unavailable_handler,
         crate::handlers::joke::teapot_handler,
         crate::handlers::ping::ping_handler,
@@ -95,6 +97,8 @@ pub async fn api() -> Result<(), ApiError> {
         application::usecase::item::update::UpdateItemDataJson,
         entity::label::Record,
         application::usecase::item::individual::IndividualItemDataJson,
+        application::usecase::csv::depreiation::DepreiationCsvJson,
+        domain::entity::data_type::depreiation_csv::DepreiationCsvData,
     ))
 )]
 struct ApiDoc;

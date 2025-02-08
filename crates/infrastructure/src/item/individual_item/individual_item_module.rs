@@ -1,6 +1,6 @@
 use domain::{
     entity::data_type::individual_item::IndividualItemData,
-    value_object::error::{critical_incident, individual_item::IndividualItemError},
+    value_object::error::{critical_incident, item::individual::IndividualItemError},
 };
 use entity::{item::Entity as Item, label::Entity as Label};
 use neo4rs::{query, Graph, Node};

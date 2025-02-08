@@ -1,4 +1,7 @@
-#[derive(Debug)]
+use serde::Serialize;
+use utoipa::ToSchema;
+
+#[derive(Debug, Serialize, ToSchema)]
 pub struct DepreiationCsvData {
     pub name: String,
     pub product_number: String,

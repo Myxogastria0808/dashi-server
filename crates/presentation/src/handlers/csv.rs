@@ -1,12 +1,30 @@
-use axum::extract::State;
-
 use crate::models::rwlock_shared_state::RwLockSharedState;
+use application::usecase::csv::depreiation::DepreiationCsvOutputs;
+use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
+use domain::value_object::error::AppError;
 
-pub async fn depreiation_handler(State(shared_state): State<RwLockSharedState>) -> String {
+#[utoipa::path(
+    get,
+    path = "/api/csv/depreiation",
+    tag = "Csv",
+    responses(
+        (status = 200, description = "OK", body = DepreiationCsvJson),
+        (status = 500, description = "Internal Server Error", body = ResponseError),
+    ),
+)]
+pub async fn depreiation_handler(
+    State(shared_state): State<RwLockSharedState>,
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached csv/depreiation handler.");
     let shared_model = shared_state.read().await;
+    let outputs = DepreiationCsvOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().depreiation_csv,
+    )
+    .await;
+    let result = outputs.run().await?;
     drop(shared_model);
-    "depreiation_handler".to_string()
+    Ok((StatusCode::OK, Json(result)).into_response())
 }
 
 pub async fn item_handler(State(shared_state): State<RwLockSharedState>) -> String {
