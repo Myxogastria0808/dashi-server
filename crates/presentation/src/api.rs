@@ -6,7 +6,7 @@ use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 // レイヤードアーキテクチャに違反しているが、Rustの性質上不可能なのでinfrastructure層及びdomain層から直接呼び出す
-use crate::{error::api::ApiError, routes};
+use crate::{error::api::ApiError, handlers::ping::ping_handler, routes};
 use domain::factory::shared_state::SharedStateFactory;
 use infrastructure::shared_state::SharedState;
 
@@ -35,7 +35,7 @@ pub async fn api() -> Result<(), ApiError> {
         .allow_origin(Any);
     // Router
     let app: Router<()> = Router::new()
-        .route("/", get(ping))
+        .route("/", get(ping_handler))
         .merge(routes::root::root_route())
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .layer(cors)
@@ -46,12 +46,6 @@ pub async fn api() -> Result<(), ApiError> {
     tracing::debug!("listening on http://{}", listener.local_addr()?);
     axum::serve(listener, app).await?;
     Ok(())
-}
-
-//* dummy *//
-async fn ping() -> String {
-    tracing::info!("reached dummy handler.");
-    "pong!".to_string()
 }
 
 #[derive(OpenApi)]
@@ -72,9 +66,11 @@ async fn ping() -> String {
     ),
     servers((url = "http://0.0.0.0:5000")),
     tags(
-        (name = "Health Check", description = "Health Checkのエンドポイント"),
         (name = "Item", description = "物品に関係するエンドポイント"),
         (name = "Generate", description = "QRまたはBarcodeを生成するエンドポイント"),
+        (name = "Health Check", description = "Health Checkのエンドポイント"),
+        (name = "Ping", description = "pingを送るエンドポイント"),
+        (name = "Joke", description = "特殊なステータスコードを返すエンドポイント"),
     ),
     paths(
         crate::handlers::generate::qr_handler,
@@ -85,6 +81,10 @@ async fn ping() -> String {
         crate::handlers::item::register_handler,
         crate::handlers::item::update_handler,
         crate::handlers::item::search_handler,
+        crate::handlers::item::individual_item_handler,
+        crate::handlers::joke::unavailable_handler,
+        crate::handlers::joke::teapot_handler,
+        crate::handlers::ping::ping_handler,
     ),
     components(schemas(
         domain::entity::data_type::generate::GenerateData,
@@ -93,6 +93,8 @@ async fn ping() -> String {
         domain::entity::data_type::search_item::SearchItemData,
         application::usecase::item::search::SearchItemJson,
         application::usecase::item::update::UpdateItemDataJson,
+        entity::label::Record,
+        application::usecase::item::individual::IndividualItemDataJson,
     ))
 )]
 struct ApiDoc;

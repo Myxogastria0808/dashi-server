@@ -1,3 +1,4 @@
+use crate::connection;
 use delete_module::delete;
 use domain::{
     repository::{
@@ -6,8 +7,6 @@ use domain::{
     },
     value_object::error::AppError,
 };
-
-use crate::connection;
 
 pub mod delete_module;
 
@@ -24,7 +23,7 @@ impl DeleteItemRepository for DeleteItem {
             connect_collection.rdb,
             connect_collection.graphdb,
             connect_collection.meilisearch,
-            delete_item_interface.visible_id,
+            delete_item_interface.id,
         )
         .await?;
         Ok(())

@@ -2,24 +2,18 @@ use domain::{
     entity::data_type::individual_item::IndividualItemData,
     value_object::error::{critical_incident, individual_item::IndividualItemError},
 };
-use entity::{
-    item::{self, Entity as Item},
-    label::Entity as Label,
-};
+use entity::{item::Entity as Item, label::Entity as Label};
 use neo4rs::{query, Graph, Node};
-use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
-    Set,
-};
+use sea_orm::{DatabaseConnection, EntityTrait};
 
-pub(super) async fn each_item(
+pub(super) async fn individual_item(
     rdb: DatabaseConnection,
     graphdb: Graph,
-    id: i32,
+    id: u32,
 ) -> Result<IndividualItemData, IndividualItemError> {
-    ////* operation *////
+    ////* operation and validation *////
     //* get individual item in Item Table *//
-    let item_model = match Item::find_by_id(id).all(&rdb).await {
+    let item_model = match Item::find_by_id(id as i32).all(&rdb).await {
         Ok(item_models) => {
             if item_models.is_empty() {
                 return Err(IndividualItemError::IdNotFoundInItemTableError);
@@ -93,7 +87,7 @@ pub(super) async fn each_item(
             Some(row) => row,
             None => break,
         };
-        let node: Node = match row.get::<Node>("item") {
+        let node: Node = match row.get::<Node>("parent") {
             Ok(node) => node,
             Err(e) => {
                 return Err(IndividualItemError::GraphDBDeError(e));

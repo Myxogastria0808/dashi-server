@@ -7,16 +7,16 @@ pub trait DeleteItemRepository: Send + Sync + 'static {
         Self: std::marker::Sized;
     fn delete(
         &self,
-        delete_item_data: DeleteItemInterface,
+        delete_item_interface: DeleteItemInterface,
     ) -> impl Future<Output = Result<(), AppError>> + Send;
 }
 
 pub struct DeleteItemInterface {
-    pub visible_id: u32,
+    pub id: u32,
 }
 
 impl DeleteItemInterface {
-    pub async fn new(visible_id: u32) -> Self {
-        Self { visible_id }
+    pub async fn new(id: u32) -> Self {
+        Self { id }
     }
 }

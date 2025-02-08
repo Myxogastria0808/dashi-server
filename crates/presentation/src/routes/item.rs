@@ -13,9 +13,9 @@ use axum::{
 pub fn item_route() -> Router<RwLockSharedState> {
     let item_routes = Router::new()
         .route("/search", get(search_handler))
-        .route("/:visible_id", get(individual_item_handler))
         .route("/connector/:connector_name/search", get(connctor_handler))
-        .route("/cable", get(cable_handler))
+        .route("/cable/:cable_color_pattern/search", get(cable_handler))
+        .route("/:id", get(individual_item_handler))
         .route("/archive/:limit", get(archive_handler))
         .route("/register", post(register_handler))
         .route("/update/:id", put(update_handler))

@@ -18,7 +18,6 @@ use crate::models::rwlock_shared_state::RwLockSharedState;
     responses(
         (status = 201, description = "CREATED", body = GenerateData),
         (status = 500, description = "Internal Server Error", body = ResponseError),
-        (status = 501, description = "Service Unavailable", body = ResponseError)
     ),
 )]
 pub async fn qr_handler(
@@ -51,7 +50,6 @@ pub async fn qr_handler(
     responses(
         (status = 201, description = "CREATED", body = GenerateData),
         (status = 500, description = "Internal Server Error", body = ResponseError),
-        (status = 501, description = "Service Unavailable", body = ResponseError)
     ),
 )]
 pub async fn barcode_handler(
@@ -84,7 +82,6 @@ pub async fn barcode_handler(
     responses(
         (status = 201, description = "CREATED", body = GenerateData),
         (status = 500, description = "Internal Server Error", body = ResponseError),
-        (status = 501, description = "Service Unavailable", body = ResponseError)
     ),
 )]
 pub async fn nothing_handler(

@@ -7,7 +7,7 @@ pub trait RegisterItemRepository {
         Self: std::marker::Sized;
     fn register(
         &self,
-        register_item_data: RegisterItemInterface,
+        register_item_interface: RegisterItemInterface,
     ) -> impl Future<Output = Result<(), AppError>> + Send;
 }
 

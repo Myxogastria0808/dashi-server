@@ -1,5 +1,6 @@
 use application::usecase::item::{
     delete::{DeleteItemInputs, DeleteItemOutputs},
+    individual::{IndividualItemInputs, IndividualItemOutputs},
     register::{RegisterItemInputs, RegisterItemOutputs},
     search::{SearchItemInputs, SearchItemJson, SearchItemOutputs},
     update::{UpdateItemDataJson, UpdateItemInputs, UpdateItemOutputs},
@@ -57,27 +58,45 @@ pub async fn search_handler(
     Ok((StatusCode::OK, Json(result)).into_response())
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/item/{id}",
+    tag = "Item",
+    params(("id", Path, description = "set item id (not visible id)")),
+    responses(
+        (status = 200, description = "OK", body = IndividualItemDataJson),
+        (status = 400, description = "Bad Request", body = ResponseError),
+        (status = 500, description = "Internal Server Error", body = ResponseError),
+    ),
+)]
 pub async fn individual_item_handler(
     Path(id): Path<u32>,
     State(shared_state): State<RwLockSharedState>,
-) -> String {
+) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached item/individual_item handler.");
     tracing::info!("path (id): {}", id);
     let shared_model = shared_state.read().await;
     //operation
+    let inputs = IndividualItemInputs { id };
+    let outputs = IndividualItemOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().individual_item,
+    )
+    .await;
+    let result = outputs.run(inputs).await?;
     drop(shared_model);
-    "individual_item_handler".to_string()
+    Ok((StatusCode::OK, Json(result)).into_response())
 }
 
 pub async fn connctor_handler(
-    Query(param): Query<HashMap<String, String>>,
+    Query(keywords): Query<HashMap<String, String>>,
     Path(connector_name): Path<String>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
     tracing::info!("reached item/connector handler.");
     tracing::info!("path (connector_name): {}", connector_name);
-    tracing::info!("query (keywords): {:?}", param.get("keywords"));
-    let keywords = match param.get("keywords") {
+    tracing::info!("query (keywords): {:?}", keywords.get("keywords"));
+    let keywords = match keywords.get("keywords") {
         Some(keywords) => keywords,
         None => "",
     };
@@ -88,11 +107,17 @@ pub async fn connctor_handler(
 }
 
 pub async fn cable_handler(
+    Query(keywords): Query<HashMap<String, String>>,
     Path(cable_color_pattern): Path<String>,
     State(shared_state): State<RwLockSharedState>,
 ) -> String {
     tracing::info!("reached item/cable handler.");
     tracing::info!("path (cable_color_pattern): {}", cable_color_pattern);
+    tracing::info!("query (keywords): {:?}", keywords.get("keywords"));
+    let keywords = match keywords.get("keywords") {
+        Some(keywords) => keywords,
+        None => "",
+    };
     let shared_model = shared_state.read().await;
     //operation
     drop(shared_model);
@@ -123,7 +148,6 @@ pub async fn archive_handler(
         (status = 201, description = "CREATED"),
         (status = 400, description = "Bad Request", body = ResponseError),
         (status = 500, description = "Internal Server Error", body = ResponseError),
-        (status = 501, description = "Service Unavailable", body = ResponseError),
     ),
 )]
 pub async fn register_handler(
@@ -149,7 +173,7 @@ pub async fn register_handler(
     put,
     path = "/api/item/update/{id}",
     tag = "Item",
-    params(("id", Path, description = "item id (not visible id)")),
+    params(("id", Path, description = "set item id (not visible id)")),
     request_body(
         description = "UpdateItemDataJson",
         content = UpdateItemDataJson,
@@ -188,7 +212,7 @@ pub async fn update_handler(
     delete,
     path = "/api/item/delete/{id}",
     tag = "Item",
-    params(("id", Path, description = "item id (not visible id)")),
+    params(("id", Path, description = "set item id (not visible id)")),
     responses(
         (status = 200, description = "OK"),
         (status = 400, description = "Bad Request", body = ResponseError),

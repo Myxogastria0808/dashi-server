@@ -22,17 +22,17 @@ impl From<GenerateError> for AppError {
     fn from(error: GenerateError) -> Self {
         match error {
             GenerateError::IsMaxBreakError(e) => AppError {
-                status_code: StatusCode::SERVICE_UNAVAILABLE,
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "generate/is-max-break".to_string(),
                 message: format!("IsMaxBreakError: IsMax=true * {}", e),
             },
             GenerateError::UnderflowError(e) => AppError {
-                status_code: StatusCode::SERVICE_UNAVAILABLE,
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "generate/underflow".to_string(),
                 message: format!("UnderflowError: {}", e),
             },
             GenerateError::OverflowError(e) => AppError {
-                status_code: StatusCode::SERVICE_UNAVAILABLE,
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "generate/overflow".to_string(),
                 message: format!("OverflowError: VisibleId has exceeded the issue limit. The current number of remaining VisibleId available for issuance is {}.", e),
             },

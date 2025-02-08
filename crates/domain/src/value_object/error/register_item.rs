@@ -60,7 +60,7 @@ impl From<RegisterItemError> for AppError {
                     .to_string(),
             },
             RegisterItemError::VisibleIdConflictInItemTableError => AppError {
-                status_code: StatusCode::SERVICE_UNAVAILABLE,
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/conflict-in-item-table".to_string(),
                 message: "VisibleIdConflictnItemTableError: Conflict VisibleId in Item Table."
                     .to_string(),
@@ -73,7 +73,7 @@ impl From<RegisterItemError> for AppError {
                         .to_string(),
             },
             RegisterItemError::VisibleIdConflictInMeiliSerachError => AppError {
-                status_code: StatusCode::SERVICE_UNAVAILABLE,
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/conflict-in-meilisearch".to_string(),
                 message: "VisibleIdConflictInMeiliSerachError: Conflict VisibleId in MeiliSerach."
                     .to_string(),
@@ -97,7 +97,7 @@ impl From<RegisterItemError> for AppError {
                     .to_string(),
             },
             RegisterItemError::ColorPatternConflictInItemTableError => AppError {
-                status_code: StatusCode::SERVICE_UNAVAILABLE,
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/color-pattern-conflict-in-item-table".to_string(),
                 message: "ColorPatternConflictInItemTableError: Conflict Color in Item Table."
                     .to_string(),
@@ -110,7 +110,7 @@ impl From<RegisterItemError> for AppError {
                         .to_string(),
             },
             RegisterItemError::ColorPatternConflictInMeiliSearchError => AppError {
-                status_code: StatusCode::SERVICE_UNAVAILABLE,
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/color-pattern-conflict-in-meilisearch".to_string(),
                 message: "ColorPatternConflictInMeiliSearchError: Conflict Color in MeiliSearch."
                     .to_string(),

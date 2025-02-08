@@ -7,7 +7,7 @@ pub trait UpdateItemRepository {
         Self: std::marker::Sized;
     fn update(
         &self,
-        update_item_data: UpdateItemInterface,
+        update_item_interface: UpdateItemInterface,
     ) -> impl Future<Output = Result<(), AppError>> + Send;
 }
 
