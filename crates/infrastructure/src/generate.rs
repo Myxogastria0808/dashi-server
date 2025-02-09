@@ -7,6 +7,7 @@ use domain::{
     },
     value_object::error::AppError,
 };
+use entity::label::Record;
 
 pub mod generate_module;
 
@@ -22,10 +23,17 @@ impl GenerateRepository for Generate {
         generate_interface: GenerateInterface,
     ) -> Result<GenerateData, AppError> {
         let rdb = connection::CollectConnection::connect_rdb().await?;
+        // temp
+        let record = match generate_interface.generate_data_request.record.as_str() {
+            "Qr" => Record::Qr,
+            "Barcode" => Record::Barcode,
+            "Nothing" => Record::Nothing,
+            _ => Record::Nothing,
+        };
         let result = generate(
             rdb.to_owned(),
-            generate_interface.quantity,
-            generate_interface.record,
+            generate_interface.generate_data_request.quantity,
+            record,
         )
         .await;
         match result {

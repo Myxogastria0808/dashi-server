@@ -22,6 +22,10 @@ pub enum RegisterItemError {
         "ParentVisibleIdNotFoundInMeiliSearchError: Parent VisibleId not found in MeiliSearch."
     )]
     ParentVisibleIdNotFoundInMeiliSearchError,
+    #[error("VisibleIdConflictInGraphDBError: Conflict VisibleId in GraphDB.")]
+    VisibleIdConflictInGraphDBError,
+    #[error("VisibleIdNotFoundInGraphDBError: VisibleId not found in GraphDB.")]
+    VisibleIdNotFoundInGraphDBError,
     #[error("ColorPatternExistInItemTableError: Color already exists in Item Table.")]
     ColorPatternExistInItemTableError,
     #[error("ColorPatternConflictInItemTableError: Conflict Color in Item Table.")]
@@ -32,6 +36,8 @@ pub enum RegisterItemError {
     ColorPatternConflictInMeiliSearchError,
     #[error("RegisteredItemNotFoundError: Registered item not found.")]
     RegisteredItemNotFoundError,
+    #[error(transparent)]
+    GraphDBDeError(#[from] neo4rs::DeError),
     #[error(transparent)]
     GraphDBError(#[from] neo4rs::Error),
     #[error(transparent)]
@@ -85,10 +91,20 @@ impl From<RegisterItemError> for AppError {
                     .to_string(),
             },
             RegisterItemError::ParentVisibleIdNotFoundInMeiliSearchError => AppError {
-                status_code: StatusCode::BAD_REQUEST,
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/parent-visible-id-not-found".to_string(),
                 message: "ParentVisibleIdNotFoundInMeiliSearchError: Parent VisibleId not found in MeiliSerch."
                     .to_string(),
+            },
+            RegisterItemError::VisibleIdConflictInGraphDBError => AppError {
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+                code: "register-item/visible-id-conflict-in-graphdb".to_string(),
+                message: "VisibleIdConflictInGraphDBError: Conflict VisibleId in GraphDB.".to_string(),
+            },
+            RegisterItemError::VisibleIdNotFoundInGraphDBError => AppError {
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+                code: "register-item/visible-id-not-found-in-graphdb".to_string(),
+                message: "VisibleIdNotFoundInGraphDBError: VisibleId not found in GraphDB.".to_string(),
             },
             RegisterItemError::ColorPatternExistInItemTableError => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
@@ -120,20 +136,25 @@ impl From<RegisterItemError> for AppError {
                 code: "register-item/registered-item-not-found".to_string(),
                 message: "RegisteredItemNotFoundError: Registered item not found.".to_string(),
             },
-            RegisterItemError::GraphDBError(e) => AppError {
+            RegisterItemError::GraphDBDeError(_e) => AppError {
+                status_code: StatusCode::INTERNAL_SERVER_ERROR,
+                code: "register-item/graphdb-de".to_string(),
+                message: "GraphDBDeError: GraphDB object can not be deserialize.".to_string(),
+            },
+            RegisterItemError::GraphDBError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/graphdb".to_string(),
-                message: e.to_string(),
+                message: "GraphDBError: GraphDB trouble is occurred.".to_string(),
             },
-            RegisterItemError::MeiliSearchError(e) => AppError {
+            RegisterItemError::MeiliSearchError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/meilisearch".to_string(),
-                message: e.to_string(),
+                message: "MeiliSearchError: MeiliSearchDB trouble is occurred.".to_string(),
             },
-            RegisterItemError::RDBError(e) => AppError {
+            RegisterItemError::RDBError(_e) => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
                 code: "register-item/rdb".to_string(),
-                message: e.to_string(),
+                message: "RDBError: RDB trouble is occurred.".to_string(),
             },
         }
     }

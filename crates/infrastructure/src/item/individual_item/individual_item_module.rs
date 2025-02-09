@@ -43,7 +43,8 @@ pub(super) async fn individual_item(
         let individual_item_data = IndividualItemData {
             id: item_model.id,
             visible_id: item_model.visible_id.to_owned(),
-            parent_visible_id: "0000".to_string(),
+            parent_id: item_model.id,
+            parent_visible_id: item_model.visible_id.to_owned(),
             record: label_model.record,
             name: item_model.name,
             product_number: item_model.product_number,
@@ -142,6 +143,7 @@ pub(super) async fn individual_item(
     let individual_item_data = IndividualItemData {
         id: item_model.id,
         visible_id: item_model.visible_id.to_owned(),
+        parent_id: parent_item_model.id,
         parent_visible_id: parent_item_model.visible_id.to_owned(),
         record: label_model.record,
         name: item_model.name,

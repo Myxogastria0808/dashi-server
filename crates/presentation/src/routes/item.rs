@@ -6,7 +6,7 @@ use crate::{
     models::rwlock_shared_state::RwLockSharedState,
 };
 use axum::{
-    routing::{delete, get, post, put},
+    routing::{delete, get, patch, post},
     Router,
 };
 
@@ -18,8 +18,8 @@ pub fn item_route() -> Router<RwLockSharedState> {
         .route("/:id", get(individual_item_handler))
         .route("/archive/:limit", get(archive_handler))
         .route("/register", post(register_handler))
-        .route("/update/:id", put(update_handler))
+        .route("/update/:id", patch(update_handler))
         .route("/delete/:id", delete(delete_handler))
-        .route("/transfer", put(transfer_handler));
+        .route("/transfer", patch(transfer_handler));
     Router::new().nest("/item", item_routes)
 }

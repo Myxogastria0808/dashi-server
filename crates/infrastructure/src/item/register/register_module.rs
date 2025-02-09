@@ -7,7 +7,7 @@ use entity::{
     label::Entity as Label,
 };
 use meilisearch_sdk::client::Client;
-use neo4rs::{query, Graph};
+use neo4rs::{query, Graph, Node};
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter,
     Set,
@@ -132,10 +132,48 @@ pub(super) async fn register(
     //drop filter_query and meilisearch_item
     let _ = filter_query;
     let _ = meilisearch_item;
+
     // validation of parent_viible_id is exist in GraphDB.
-    let _ = graphdb
+    let mut item_node = graphdb
         .execute(query("MATCH (item:Item {id: $id}) RETURN item").param("id", parent_item_model.id))
         .await?;
+    // parse node
+    let mut item_nodes: Vec<i64> = Vec::new();
+    loop {
+        let item = match item_node.next().await {
+            Ok(item) => item,
+            Err(e) => {
+                return Err(RegisterItemError::GraphDBError(e));
+            }
+        };
+        let row = match item {
+            Some(row) => row,
+            None => break,
+        };
+        let node: Node = match row.get::<Node>("item") {
+            Ok(node) => node,
+            Err(e) => {
+                return Err(RegisterItemError::GraphDBDeError(e));
+            }
+        };
+        let id: i64 = match node.get::<i64>("id") {
+            Ok(id) => id,
+            Err(e) => {
+                return Err(RegisterItemError::GraphDBDeError(e));
+            }
+        };
+        item_nodes.push(id);
+    }
+    if item_nodes.len() > 1 {
+        // If multiple visible_ids already exist
+        //* critical incident *//
+        critical_incident::conflict_error().await;
+        return Err(RegisterItemError::VisibleIdConflictInGraphDBError);
+    }
+    if item_nodes.is_empty() {
+        // If visible_id does not exist
+        return Err(RegisterItemError::VisibleIdNotFoundInGraphDBError);
+    }
 
     //* validation of not conflict color *//
     if register_item_data.color.chars().count() != 0 {

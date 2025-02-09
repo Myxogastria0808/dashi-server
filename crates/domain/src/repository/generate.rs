@@ -1,6 +1,8 @@
-use crate::{entity::data_type::generate::GenerateData, value_object::error::AppError};
+use crate::{
+    entity::data_type::{generate::GenerateData, generate_data_request::GenerateDataRequest},
+    value_object::error::AppError,
+};
 use async_std::future::Future;
-use entity::label::Record;
 
 pub trait GenerateRepository {
     fn new() -> impl Future<Output = Self> + Send
@@ -13,12 +15,13 @@ pub trait GenerateRepository {
 }
 
 pub struct GenerateInterface {
-    pub quantity: u32,
-    pub record: Record,
+    pub generate_data_request: GenerateDataRequest,
 }
 
 impl GenerateInterface {
-    pub async fn new(quantity: u32, record: Record) -> Self {
-        Self { quantity, record }
+    pub async fn new(generate_data_request: GenerateDataRequest) -> Self {
+        Self {
+            generate_data_request,
+        }
     }
 }

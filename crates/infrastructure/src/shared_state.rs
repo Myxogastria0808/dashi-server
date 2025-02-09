@@ -4,7 +4,7 @@ use crate::{
     healthcheck::HealthCheck,
     item::{
         delete::DeleteItem, individual_item::IndividualItem, register::RegisterItem,
-        search::SearchItem, update::UpdateItem,
+        search::SearchItem, transfer::TransferItem, update::UpdateItem,
     },
 };
 use domain::{
@@ -16,16 +16,16 @@ use domain::{
         item::{
             delete::DeleteItemRepository, individual::IndividualItemRepository,
             register::RegisterItemRepository, search::SearchItemRepository,
-            update::UpdateItemRepository,
+            transfer::TransferItemRepository, update::UpdateItemRepository,
         },
     },
 };
 
-#[allow(dead_code)]
 #[derive(Clone)]
 pub struct SharedState {
     pub item_csv: ItemCsv,
     pub depreiation_csv: DepreiationCsv,
+    pub transfer_item: TransferItem,
     pub individual_item: IndividualItem,
     pub search_item: SearchItem,
     pub update_item: UpdateItem,
@@ -40,6 +40,7 @@ impl SharedStateFactory for SharedState {
         SharedState {
             item_csv: ItemCsv::new().await,
             depreiation_csv: DepreiationCsv::new().await,
+            transfer_item: TransferItem::new().await,
             individual_item: IndividualItem::new().await,
             search_item: SearchItem::new().await,
             update_item: UpdateItem::new().await,

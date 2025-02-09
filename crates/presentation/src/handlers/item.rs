@@ -3,6 +3,7 @@ use application::usecase::item::{
     individual::{IndividualItemInputs, IndividualItemOutputs},
     register::{RegisterItemInputs, RegisterItemOutputs},
     search::{SearchItemInputs, SearchItemJson, SearchItemOutputs},
+    transfer::{TransferItemInputs, TransferItemOutputs},
     update::{UpdateItemDataJson, UpdateItemInputs, UpdateItemOutputs},
 };
 use axum::{
@@ -155,7 +156,7 @@ pub async fn register_handler(
     Json(register_item_data): Json<RegisterItemData>,
 ) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached item/register handler.");
-    tracing::info!("body (register_data): {:?}", register_item_data);
+    tracing::info!("body (register_item_data): {:?}", register_item_data);
     let shared_model = shared_state.write().await;
     // operation
     let inputs = RegisterItemInputs { register_item_data };
@@ -170,7 +171,7 @@ pub async fn register_handler(
 }
 
 #[utoipa::path(
-    put,
+    patch,
     path = "/api/item/update/{id}",
     tag = "Item",
     params(("id", Path, description = "set item id (not visible id)")),
@@ -238,21 +239,35 @@ pub async fn delete_handler(
     Ok((StatusCode::OK, ()).into_response())
 }
 
+#[utoipa::path(
+    patch,
+    path = "/api/item/transfer",
+    tag = "Item",
+    request_body(
+        description = "TransferItemData",
+        content = TransferItemData,
+    ),
+    responses(
+        (status = 200, description = "OK"),
+        (status = 400, description = "Bad Request", body = ResponseError),
+        (status = 500, description = "Internal Server Error", body = ResponseError),
+    ),
+)]
 pub async fn transfer_handler(
     State(shared_state): State<RwLockSharedState>,
-    Json(transfer_item_data): Json<Vec<TransferItemData>>,
+    Json(transfer_item_data): Json<TransferItemData>,
 ) -> Result<impl IntoResponse, AppError> {
     tracing::info!("reached item/transfer handler.");
-    tracing::info!("body (transfer_item_data_inputs): {:?}", transfer_item_data);
+    tracing::info!("body (transfer_item_data): {:?}", transfer_item_data);
     let shared_model = shared_state.write().await;
     //operation
-    // let inputs = TransferItemInputs { transfer_item_data };
-    // let outputs = TransferItemOutputs::new(
-    //     shared_model.clone().healthcheck,
-    //     shared_model.clone().move_item,
-    // )
-    // .await;
-    // outputs.run(inputs).await?;
+    let inputs = TransferItemInputs { transfer_item_data };
+    let outputs = TransferItemOutputs::new(
+        shared_model.clone().healthcheck,
+        shared_model.clone().transfer_item,
+    )
+    .await;
+    outputs.run(inputs).await?;
     drop(shared_model);
     Ok((StatusCode::OK, ()).into_response())
 }

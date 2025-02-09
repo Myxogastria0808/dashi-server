@@ -9,9 +9,7 @@ use domain::{
 };
 use serde::Deserialize;
 
-pub mod operator;
 pub mod register_module;
-pub mod validator;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct RegisterItem;

@@ -9,9 +9,7 @@ use domain::{
 };
 use search_module::search;
 
-pub mod operator;
 pub mod search_module;
-pub mod validator;
 
 #[derive(Clone, Debug)]
 pub struct SearchItem;

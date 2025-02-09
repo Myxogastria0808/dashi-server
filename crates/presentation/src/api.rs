@@ -30,7 +30,8 @@ pub async fn api() -> Result<(), ApiError> {
             Method::GET,
             Method::PATCH,
             Method::DELETE,
-            Method::PUT,
+            Method::OPTIONS,
+            Method::HEAD,
         ])
         .allow_origin(Any);
     // Router
@@ -74,15 +75,14 @@ pub async fn api() -> Result<(), ApiError> {
         (name = "Joke", description = "特殊なステータスコードを返すエンドポイント"),
     ),
     paths(
-        crate::handlers::generate::qr_handler,
-        crate::handlers::generate::barcode_handler,
-        crate::handlers::generate::nothing_handler,
         crate::handlers::utils::healthcheck_handler,
+        crate::handlers::utils::generate_handler,
         crate::handlers::item::delete_handler,
         crate::handlers::item::register_handler,
         crate::handlers::item::update_handler,
         crate::handlers::item::search_handler,
         crate::handlers::item::individual_item_handler,
+        crate::handlers::item::transfer_handler,
         crate::handlers::csv::depreiation_handler,
         crate::handlers::csv::item_handler,
         crate::handlers::joke::unavailable_handler,
@@ -102,6 +102,8 @@ pub async fn api() -> Result<(), ApiError> {
         domain::entity::data_type::depreiation_csv::DepreiationCsvData,
         application::usecase::csv::item::ItemCsvJson,
         domain::entity::data_type::item_csv::ItemCsvData,
+        domain::entity::data_type::transfer_item::TransferItemData,
+        domain::entity::data_type::generate_data_request::GenerateDataRequest,
     ))
 )]
 struct ApiDoc;

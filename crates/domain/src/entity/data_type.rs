@@ -1,5 +1,6 @@
 pub mod depreiation_csv;
 pub mod generate;
+pub mod generate_data_request;
 pub mod individual_item;
 pub mod item_csv;
 pub mod meilisearch;
@@ -7,5 +8,6 @@ pub mod register_item;
 pub mod rent_item;
 pub mod search_item;
 pub mod transfer_item;
+pub mod transfer_item_result;
 pub mod trash_item;
 pub mod update_item;
