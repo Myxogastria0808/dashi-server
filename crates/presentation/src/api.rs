@@ -1,6 +1,11 @@
 use application::model::shared_state::SharedStateUseCase;
 use async_std::sync::{Arc, RwLock};
-use axum::{extract::DefaultBodyLimit, http::Method, routing::get, Router};
+use axum::{
+    extract::DefaultBodyLimit,
+    http::{header, HeaderValue, Method},
+    routing::get,
+    Router,
+};
 use tower_http::cors::{Any, CorsLayer};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
@@ -25,14 +30,9 @@ pub async fn api() -> Result<(), ApiError> {
     ));
     // CORS
     let cors: CorsLayer = CorsLayer::new()
-        .allow_methods([
-            Method::POST,
-            Method::GET,
-            Method::PATCH,
-            Method::DELETE,
-            Method::OPTIONS,
-            Method::HEAD,
-        ])
+        .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE])
+        .expose_headers([header::CONTENT_DISPOSITION])
+        .allow_methods([Method::POST, Method::GET, Method::PATCH, Method::DELETE])
         .allow_origin(Any);
     // Router
     let app: Router<()> = Router::new()
@@ -43,7 +43,7 @@ pub async fn api() -> Result<(), ApiError> {
         .layer(DefaultBodyLimit::max(1024 * 1024 * 100)) //100MB
         .with_state(Arc::clone(&shared_state));
     // Server
-    let listener = tokio::net::TcpListener::bind("localhost:5000").await?;
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:5000").await?;
     tracing::debug!("listening on http://{}", listener.local_addr()?);
     axum::serve(listener, app).await?;
     Ok(())
@@ -65,7 +65,7 @@ pub async fn api() -> Result<(), ApiError> {
             url = "http://www.wtfpl.net"
         ),
     ),
-    servers((url = "http://localhost:5000")),
+    servers((url = "http://0.0.0.0:5000")),
     tags(
         (name = "Item", description = "物品に関係するエンドポイント"),
         (name = "Csv", description = "csv出力に関するエンドポイント"),

@@ -6,4 +6,6 @@ pub enum ApiError {
     SetGlobalDefaultError(#[from] tracing::subscriber::SetGlobalDefaultError),
     #[error(transparent)]
     SetupAxumError(#[from] std::io::Error),
+    #[error(transparent)]
+    SetupCORSError(#[from] axum::http::header::InvalidHeaderValue),
 }
