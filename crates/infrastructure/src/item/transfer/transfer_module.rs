@@ -2,9 +2,9 @@ use domain::{
     entity::data_type::transfer_item::TransferItemData,
     value_object::error::{critical_incident, item::transfer::TransferItemError},
 };
-use entity::item::Entity as Item;
+use entity::item::{self, Entity as Item};
 use neo4rs::{query, Graph, Node};
-use sea_orm::{DatabaseConnection, EntityTrait};
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use std::collections::HashSet;
 
 pub(super) async fn transfer(
@@ -78,12 +78,19 @@ pub(super) async fn transfer(
     let _ = item_node;
     let _ = item_node_ids;
 
-    //* validation of new_parent_id is exist in Item Table *//
-    match Item::find().one(&rdb).await {
+    //* validation of new_parent_visible_id is exist in Item Table *//
+    let new_parent_item_model = match Item::find()
+        .filter(item::Column::Color.eq(transfer_item_data.new_parent_visible_id.to_owned()))
+        .one(&rdb)
+        .await
+    {
         Ok(item_model) => {
-            if item_model.is_none() {
-                // If id does not exist
-                return Err(TransferItemError::NewParentIdNotFoundInItemTableError);
+            match item_model {
+                Some(item_model) => item_model,
+                None => {
+                    // If id does not exist
+                    return Err(TransferItemError::NewParentVisibleIdNotFoundInItemTableError);
+                }
             }
         }
         Err(e) => return Err(TransferItemError::RDBError(e)),
@@ -92,8 +99,7 @@ pub(super) async fn transfer(
     // get item node
     let mut new_parent_item_node = graphdb
         .execute(
-            query("MATCH (item:Item {id: $id}) RETURN item")
-                .param("id", transfer_item_data.new_parent_id),
+            query("MATCH (item:Item {id: $id}) RETURN item").param("id", new_parent_item_model.id),
         )
         .await?;
     // parse node
@@ -140,7 +146,7 @@ pub(super) async fn transfer(
     //* validation of new_parent_id is not exist in visible_id's descendant items *//
     let mut descendant_item_nodes = graphdb
         .execute(
-            query("MATCH path=(descendants)-[:ItemTree*]->(:Item {id: $id}) RETURN descendants")
+            query("MATCH path=(descendants)-[:Parent*]->(:Item {id: $id}) RETURN descendants")
                 .param("id", transfer_item_data.id),
         )
         .await?;
@@ -171,7 +177,7 @@ pub(super) async fn transfer(
         };
         descendant_item_node_ids.insert(id);
     }
-    if descendant_item_node_ids.contains(&(transfer_item_data.new_parent_id as i64)) {
+    if descendant_item_node_ids.contains(&(new_parent_item_model.id as i64)) {
         // If new_parent_visible_id is descendant of visible_id
         return Err(TransferItemError::NewParentIdOneOfDescendantIdsError);
     }
@@ -181,7 +187,7 @@ pub(super) async fn transfer(
     // get item node
     let mut old_parent_item_nodes = graphdb
         .execute(
-            query("MATCH (:Item {id: $id})-[:ItemTree]->(parent) RETURN parent")
+            query("MATCH (:Item {id: $id})-[:Parent]->(parent) RETURN parent")
                 .param("id", transfer_item_data.id),
         )
         .await?;
@@ -231,10 +237,10 @@ pub(super) async fn transfer(
     match graphdb
             .run(
                 query(
-                    "MATCH (:Item {id: $child_id})-[relation:ItemTree]->(:Item {id: $old_parent_id}) DELETE relation WITH relation MATCH (child:Item {id: $child_id}) MATCH (new_parent:Item {id: $new_parent_id}) CREATE (child)-[:ItemTree]->(new_parent)"
+                    "MATCH (:Item {id: $child_id})-[relation:Parent]->(:Item {id: $old_parent_id}) DELETE relation WITH relation MATCH (child:Item {id: $child_id}) MATCH (new_parent:Item {id: $new_parent_id}) CREATE (child)-[:Parent]->(new_parent)"
                 )
                 .param("old_parent_id", old_parent_item_id)
-                .param("new_parent_id",transfer_item_data.new_parent_id) 
+                .param("new_parent_id",new_parent_item_model.id) 
                 .param("child_id", transfer_item_data.id)
             )
             .await

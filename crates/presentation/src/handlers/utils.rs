@@ -47,7 +47,7 @@ pub async fn healthcheck_handler(
         content = GenerateDataRequest,
     ),
     responses(
-        (status = 201, description = "CREATED", body = GenerateData),
+        (status = 201, description = "Created", body = GenerateData),
         (status = 500, description = "Internal Server Error", body = ResponseError),
     ),
 )]

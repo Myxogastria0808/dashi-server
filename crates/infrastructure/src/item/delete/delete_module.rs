@@ -73,10 +73,8 @@ pub(super) async fn delete(
     // validation of id is exist and is leaf in GraphDB
     let mut item_node = graphdb
         .execute(
-            query(
-                "MATCH (item:Item {id: $id}) WHERE NOT exists(()-[:ItemTree]->(item)) RETURN item",
-            )
-            .param("id", id),
+            query("MATCH (item:Item {id: $id}) WHERE NOT exists(()-[:Parent]->(item)) RETURN item")
+                .param("id", id),
         )
         .await?;
     // parse node
@@ -280,7 +278,7 @@ async fn rollback_graphdb(graphdb: Graph, deleted_item_id: i64) -> Result<(), De
     //* get parent_item_id *//
     let mut parent_item_node = match graphdb
         .execute(
-            query("MATCH (:Item {id: $child_id})-[:ItemTree]->(parent) RETURN parent")
+            query("MATCH (:Item {id: $child_id})-[:Parent]->(parent) RETURN parent")
                 .param("child_id", deleted_item_id),
         )
         .await
@@ -336,7 +334,7 @@ async fn rollback_graphdb(graphdb: Graph, deleted_item_id: i64) -> Result<(), De
     match graphdb
         .run(
             query(
-                "MATCH (parent:Item {id: $parent_id}) CREATE (child:Item {id: $child_id})-[relation:ItemTree]->(parent)"
+                "MATCH (parent:Item {id: $parent_id}) CREATE (child:Item {id: $child_id})-[relation:Parent]->(parent)"
             )
             .param("parent_id", parent_item_id)
             .param("child_id", deleted_item_id)

@@ -65,7 +65,7 @@ pub(super) async fn individual_item(
     //* get parent item node id in GraphDB *//
     let mut insert_graphdb_item_node = match graphdb
         .execute(
-            query("MATCH (:Item {id: $id})-[:ItemTree]->(parent) RETURN parent")
+            query("MATCH (:Item {id: $id})-[:Parent]->(parent) RETURN parent")
                 .param("id", item_model.id),
         )
         .await

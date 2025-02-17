@@ -146,7 +146,7 @@ pub async fn archive_handler(
         content = RegisterItemData,
     ),
     responses(
-        (status = 201, description = "CREATED"),
+        (status = 201, description = "Created"),
         (status = 400, description = "Bad Request", body = ResponseError),
         (status = 500, description = "Internal Server Error", body = ResponseError),
     ),

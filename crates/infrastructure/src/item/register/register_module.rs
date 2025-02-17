@@ -300,7 +300,7 @@ pub(super) async fn register(
     match graphdb
         .run(
             query(
-                "MATCH (parent:Item {id: $parent_id}) CREATE (child:Item {id: $child_id})-[relation:ItemTree]->(parent)"
+                "MATCH (parent:Item {id: $parent_id}) CREATE (child:Item {id: $child_id})-[relation:Parent]->(parent)"
             )
             .param("parent_id", parent_item_model.id)
             .param("child_id", registered_item_model.id)

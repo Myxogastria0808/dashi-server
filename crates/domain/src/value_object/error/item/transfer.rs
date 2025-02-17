@@ -8,8 +8,10 @@ pub enum TransferItemError {
     CannotTransferRootItemError,
     #[error("IdNotFoundInItemTableError: Id not found in Item Table.")]
     IdNotFoundInItemTableError,
-    #[error("NewParentIdNotFoundInItemTableError: NewParentId not found in Item Table.")]
-    NewParentIdNotFoundInItemTableError,
+    #[error(
+        "NewParentVisibleIdNotFoundInItemTableError: NewParentVisibleId not found in Item Table."
+    )]
+    NewParentVisibleIdNotFoundInItemTableError,
     #[error("IdConflictInGraphDBError: Conflict Id in GraphDB.")]
     IdConflictInGraphDBError,
     #[error("IdNotFoundInGraphDBError: Id not found in GraphDb.")]
@@ -45,11 +47,11 @@ impl From<TransferItemError> for AppError {
                 code: "transfer-item/id-not-found".to_string(),
                 message: "IdNotFoundInItemTableError: Id not found in Item Table.".to_string(),
             },
-            TransferItemError::NewParentIdNotFoundInItemTableError => AppError {
+            TransferItemError::NewParentVisibleIdNotFoundInItemTableError => AppError {
                 status_code: StatusCode::INTERNAL_SERVER_ERROR,
-                code: "transfer-item/new-parent-id-not-found".to_string(),
+                code: "transfer-item/new-parent-visible-id-not-found".to_string(),
                 message:
-                    "NewParentIdNotFoundInItemTableError: NewParentId not found in Item Table."
+                    "NewParentVisibleIdNotFoundInItemTableError: NewParentVisibleId not found in Item Table."
                         .to_string(),
             },
             TransferItemError::IdConflictInGraphDBError => AppError {

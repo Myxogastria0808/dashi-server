@@ -43,7 +43,7 @@ pub async fn api() -> Result<(), ApiError> {
         .layer(DefaultBodyLimit::max(1024 * 1024 * 100)) //100MB
         .with_state(Arc::clone(&shared_state));
     // Server
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:5000").await?;
+    let listener = tokio::net::TcpListener::bind("localhost:5000").await?;
     tracing::debug!("listening on http://{}", listener.local_addr()?);
     axum::serve(listener, app).await?;
     Ok(())
@@ -65,7 +65,7 @@ pub async fn api() -> Result<(), ApiError> {
             url = "http://www.wtfpl.net"
         ),
     ),
-    servers((url = "http://0.0.0.0:5000")),
+    servers((url = "http://localhost:5000")),
     tags(
         (name = "Item", description = "物品に関係するエンドポイント"),
         (name = "Csv", description = "csv出力に関するエンドポイント"),

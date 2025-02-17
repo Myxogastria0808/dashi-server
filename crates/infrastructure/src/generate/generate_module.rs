@@ -28,6 +28,7 @@ pub(super) async fn generate(
     }
     let max_label_model: label::Model = max_label_models[0].to_owned();
     // validation of Underflow
+    //*! このエラーは不要になる
     if quantity == 0 {
         return Err(GenerateError::UnderflowError(format!("{}", quantity)));
     }
@@ -53,7 +54,7 @@ pub(super) async fn generate(
         }
         Err(e) => {
             tracing::error!("Failed to update IsMax of current max label.");
-            return Err(e.into());
+            return Err(GenerateError::RDBError(e));
         }
     };
 
@@ -85,8 +86,7 @@ pub(super) async fn generate(
             new_label_models.push(insert_label_model);
         }
     }
-    let new_label_models = Label::insert_many(new_label_models).exec(&rdb).await;
-    match new_label_models {
+    match Label::insert_many(new_label_models).exec(&rdb).await {
         Ok(result) => {
             tracing::info!("New labels are generated.");
             tracing::debug!("{:#?}", result);
