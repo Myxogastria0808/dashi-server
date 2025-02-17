@@ -143,7 +143,6 @@ pub(super) async fn update(
     active_item_model.durability = Set(update_item_data.durability);
     active_item_model.is_depreciation = Set(update_item_data.is_depreciation);
     active_item_model.connector = Set(serde_json::json!(update_item_data.connector));
-    active_item_model.is_rent = Set(update_item_data.is_rent);
     active_item_model.color = Set(update_item_data.color.to_owned());
     active_item_model.updated_at = Set(chrono::Utc::now().naive_local());
 

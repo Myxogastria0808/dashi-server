@@ -10,6 +10,5 @@ pub struct UpdateItemData {
     pub durability: Option<i32>,
     pub is_depreciation: bool,
     pub connector: Vec<String>,
-    pub is_rent: bool,
     pub color: String,
 }

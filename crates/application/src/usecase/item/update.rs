@@ -20,7 +20,6 @@ pub struct UpdateItemDataJson {
     pub durability: Option<i32>,
     pub is_depreciation: bool,
     pub connector: Vec<String>,
-    pub is_rent: bool,
     pub color: String,
 }
 
@@ -57,7 +56,6 @@ impl<T: HealthCheckRepository, S: UpdateItemRepository> UpdateItemOutputs<T, S> 
             durability: update_item_inputs.update_item_data_json.durability,
             is_depreciation: update_item_inputs.update_item_data_json.is_depreciation,
             connector: update_item_inputs.update_item_data_json.connector.clone(),
-            is_rent: update_item_inputs.update_item_data_json.is_rent,
             color: update_item_inputs.update_item_data_json.color.clone(),
         };
         let update_item_interface = UpdateItemInterface::new(update_item_data).await;
